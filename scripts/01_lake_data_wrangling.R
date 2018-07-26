@@ -121,18 +121,20 @@ lake<-as.data.frame(lake.ll)
 
 ### ---- clean up data ------- 
 #### get rid of unwanted columns 
-lake<-subset(lake, select = -c(NTL_RESULT, AMFCALL, RVFCCANBIG_RIP,  RVFCCANSMALL_RIP,  RVFCGNDNONW_RIP,
+lake<-subset(lake, select = -c(SITETYPE, NTL_RESULT, AMFCALL, RVFCCANBIG_RIP,  RVFCCANSMALL_RIP,  RVFCGNDNONW_RIP,
                                        RVFCGNDWOODY_RIP,  RVFCUNDNONW_RIP, RVFCUNDWOODY_RIP, RVEG, 
                                        ELEVMIN_BSN, ELEVMEAN_BSN, ELEVMAX_BSN, NLCD2006_71PCT_BSN, NLCD2006_52PCT_BSN,
-                                       POPDEN_BSN))
+                                       POPDEN_BSN, LON_DD83.1, LAT_DD83.1))
 
 #rename columns 
 lake<- lake %>% dplyr::rename (TP=PTL_RESULT, TN=NTL_RESULT_ug, CHLA=CHLX_RESULT, MMI=MMI_BENT_NLA12, DEPTH=INDEX_SITE_DEPTH, 
                           AG_PCT=NLCD2006_AGRICPCT_BSN, URBAN_PCT=NLCD2006_DEVELOPEDPCT_BSN, FOREST_PCT=NLCD2006_FORESTPCT_BSN, 
                           WETLAND_PCT=NLCD2006_WETLANDPCT_BSN, PrecipNorm=meanprecip, 
-                          TMAX=tmax, TMIN=tmin, 
+                          TMAX=tmax, TMIN=tmin, Rveg=RVEG_pct,
                           ELEVMAX=ELEVMAX_m, ELEVMEAN=ELEVMEAN_m, ELEVMIN=ELEVMIN_m,
                           NDEP=NADP_TOTALN_BSN, POPDEN=POPDEN_peoplesqkm, ROADDEN=ROADDEN_BSN, WS_AREA=BASINAreaSqKM
 )
 
 summary(lake)
+
+write.csv(lake, "Data/NLA2012_data.csv", row.names = FALSE)

@@ -38,8 +38,6 @@ fitall<-rpart(logTP ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_AR
                 WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
               method="anova", data=allecos, control =  rpart.control(xval=10))
 
-summary(fitall)
-
 # Prune based on 1SE rule  (xerror + xstd of the minimum and then pruning at the row with xerror just below that)
 plotcp(fitall, main="TP pruning") #chose the CP value that is furthest left under the line (1SE above the min error)
 printcp(fitall) #shows a table of CP values and xerror/xstd
@@ -48,7 +46,7 @@ post(fitall1, title = "Drivers of TP in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE)  #horizontal = TRUE
-
+summary(fitall1) #investigate competitor splits
 ## use partykit package to make maps and graphs  
 pfit <- as.party(fitall1)  #change the format to fit this package
 plot(pfit)
@@ -109,7 +107,7 @@ post(TNall1, title = "Drivers of TN in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-
+summary(TNall1)
 pfitTN <- as.party(TNall1)  #change the format to fit this package
 plot(pfitTN)
 TNdata<-data_party(pfit)
@@ -159,7 +157,7 @@ post(CHLA1, title = "Drivers of Chla in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-
+summary(CHLA1)
 chlafit <- as.party(CHLA1)  #change the format to fit this package
 plot(chlafit)
 chladata<-data_party(chlafit)
@@ -204,6 +202,7 @@ AQMall<-rpart(logaqveg ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS
               method="anova", data=allecos)
 
 #no pruning needed 
+summary(AQMall)
 printcp(AQMall)
 plotcp(AQMall)
 post(AQMall, title = "Drivers of Aquatic Vegetation in Freshwater Ecosystems",
@@ -248,78 +247,68 @@ text(7, 3.4, labels='d', col='black')
 
 #################### MMI ############# 
 hist(allecos$MMI) # normal, don't transform 
-MMIall<-rpart(MMI ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + BASIN_AREA + POPDEN + ROADDEN + NDEP + 
+MMIall<-rpart(MMI ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + WS_AREA + DEPTH + POPDEN + ROADDEN + NDEP + 
                 TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
                 WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
               method="anova", data=allecos)
-printcp(MMIall)
-post(MMIall, title = "Drivers of MMI in Freshwater Ecosystems",
-     filename = '', 
-     digits = 4,
-     use.n = TRUE, horizontal = TRUE)
-
 plotcp(MMIall)
 printcp(MMIall)
-MMIall1<-prune(MMIall, cp=0.010629)
+MMIall1<-prune(MMIall, cp=0.014358)
 post(MMIall1, title = "Drivers of MMI in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
 
+summary(MMIall1)
 MMIfit <- as.party(MMIall1)  #change the format to fit this package
 plot(MMIfit)
 MMIdata <- data_party(MMIfit) 
 MMIdata$class<-MMIdata$'(fitted)'
 MMIdata$class<-as.factor(MMIdata$class)
-MMIdata$newclass<-car::recode(MMIdata$class,"5=1;7=2;8=3;9=4;11=5;12=6;15=7; 16=8 ; 17=9")
-
-data2 <- data_party(MMIfit, 2) 
-data13 <- data_party(MMIfit, 13) 
+MMIdata$newclass<-car::recode(MMIdata$class,"3=1;5=2;6=3;8=4;9=5")
 
 #subset of terminal classes 
-mmiL<-filter(MMIdata, newclass== '1' | newclass== '2' | newclass== '3' | newclass== '4' | newclass== '5' | newclass== '6' )
+mmiL<-filter(MMIdata, newclass== '1' | newclass== '2' | newclass== '3')
 p+ geom_point(data=mmiL, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(16, 1, 1, 16, 16, 1),  name = "Class")+
+  scale_shape_manual(values=c(16, 1, 1),  name = "Class")+
   scale_colour_brewer(palette = 'Paired', name = "Class")
 
-mmiR<-filter(MMIdata, newclass== '7' | newclass== '8' | newclass== '9')
+mmiR<-filter(MMIdata, newclass== '4' | newclass== '5' )
 p+ geom_point(data=mmiR, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(16, 1, 16),  name = "Class")+
-  scale_colour_manual(values=c('burlywood1', 'darkorange', "plum3"), name = "Class")
-
-
-
-#% AG
-p+ geom_point(data=data2, aes(x = LON_DD83, y = LAT_DD83, colour=(">=0.076% Ag"), shape=Type)) + 
-  geom_point(data=data13, aes(x = LON_DD83, y = LAT_DD83, colour=("<0.076% Ag"), shape=Type ) )
-
-#final classes
-p+ geom_point(data=MMIdata, aes(x = LON_DD83, y = LAT_DD83, colour=class, shape=Type )) + 
-  scale_colour_brewer(palette = 'Paired') + 
-  scale_shape_manual(values = c(3, 17, 16))
+  scale_shape_manual(values=c(16, 1),  name = "Class")+
+  scale_colour_manual(values=c('green4', 'lightcoral'), name = "Class")
 
 #ANOVA test
 anova(lm(MMIdata$MMI~MMIdata$class))
-out<-LSD.test(MMIdata$MMI,MMIdata$class, 3397, 296, alpha=0.05)
+out<-LSD.test(MMIdata$MMI,MMIdata$newclass, 33999, 323, alpha=0.05)
 boxplot(MMI~newclass,
         data=MMIdata,
         xlab="class", 
         ylab="MMI", col=brewer.pal(9,'Paired'))
-text(1, 19, labels='a', col='black')
-text(2, 19, labels='a', col='black')
-text(3, 30, labels='b', col='black')
-text(4, 35, labels='c', col='black')
-text(5, 35, labels='c', col='black')
-text(6, 55, labels='d', col='black')
-text(7, 35, labels='c', col='black')
-text(8, 50, labels='e', col='black')
-text(9, 55, labels='d', col='black')
+text(1, 17, labels='a', col='black')
+text(2, 23, labels='b', col='black')
+text(3, 35, labels='c', col='black')
+text(4, 39, labels='d', col='black')
+text(5, 59, labels='e', col='black')
 
-
+summary(allecos)
 #this can be useful to look at R2 of each split 
-tmp <- printcp(MMI.L1)
+tmp <- printcp(MMIall1)
 rsq.val <- 1-tmp[,c(3,4)]  
 rsq.val[nrow(rsq.val),]  #final R2 value; x-error is the cross-validation error
 
 #back transform all of the results: opposite of natural log in the "e"= 2.718281
 2.718281^3.442
+
+log(1+5)   #1.791759
+(2.718281^(1.791759))-1
+
+back_transform<-function (x) {(2.718281^(x))-1}
+back_transform(0.8627)
+back_transform(1.63)
+back_transform(1.655)
+back_transform(1.799)
+back_transform(2.148)
+back_transform(2.971)
+back_transform(3.106)
+

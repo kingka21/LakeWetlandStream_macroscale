@@ -149,7 +149,6 @@ wlMMnoNAs<-wetland.aea[!(is.na(wetland.aea$MMI)),]
 wl.MMI.v <- variogram(MMI~1, wlMMnoNAs, cutoff=3000, width=20)  
 min(wl.MMI.v$np)
 wl.MMI.fit <- vgm(model="Exp", nugget = 100, psill=200, range=146)
-plot(wl.MMI.v, model=wl.MMI.fit, col='black', main="MMI")
 
 ##streams##
 strMMnoNAs<-stream.aea[!(is.na(stream.aea$MMI)),] 
@@ -165,7 +164,6 @@ lake.aq.v<- variogram(logaqveg~1, LaqnoNAs, cutoff=3000, width=20)
 min(lake.aq.v$np)
 lake.aq.fit <- fit.variogram(lake.aq.v, vgm( "Sph", "Exp"))
 lake.aq.fit
-plot(lake.aq.v, model=lake.aq.fit, col='black', main="logAQMLake")
 
 ###wetland 
 wlaqnoNAs<-wetland.aea[!(is.na(wetland.aea$logaqveg)),] 
@@ -180,9 +178,9 @@ stream.aq.v <- variogram(logaqveg~1, straqnoNAs, cutoff=3000, width=20)
 min(stream.aq.v$np)
 stream.aq.fit <- fit.variogram(stream.aq.v, vgm( "Sph", "Exp"))
 stream.aq.fit
-plot(stream.aq.v, model=stream.aq.fit, col='black', main="logAQM")
 
-############################### PLOT #######################
+########################################################
+##-------------------------- PLOT --------------------###
 jpeg('15panel.jpeg',width = 7, height = 9, units = 'in', res = 600)
 par(mfrow=c(5,3))
 par(mar=c(3,3,0,0), oma=c(3,3,1,1))
@@ -192,90 +190,90 @@ plot(variogramLine(lake.TP.fit, 3000), type='l', ylim=c(0,2))
 points(lake.TP.v[,2:3], pch=21, bg="deepskyblue", col='black')  
 abline(v=lake.TP.fit[2,3], col="deepskyblue") 
 abline(v=2050, col="deepskyblue") 
-mtext('a', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('a', side = 3, line = -2.0, adj = .02, cex = 1.0)
 #top middle 
 plot(variogramLine(wl.TP.fit, 3000), type='l', ylim=c(0,3.5)) #this plots the line from the model 
 points(wl.TP.v[,2:3], pch=21, bg='mediumpurple',  col='black')  #this plots the points 
 abline(v=wl.TP.fit[2,3], col="mediumpurple") #this plots the R range 
 abline(v=1930, col="mediumpurple") #this plots the R range 
-mtext('b', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('b', side = 3, line = -2.0, adj = .02, cex = 1.0)
 #top right 
 plot(variogramLine(stream.TP.fit, 3000), type='l', ylim=c(0,2)) #this plots the line from the model 
 points(stream.TP.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.TP.fit[2,3], col="green3") 
 abline(v=1950, col="green3") #this plots the R range 
-mtext('c', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('c', side = 3, line = -2.0, adj = .02, cex = 1.0)
 
 #left TN 
 plot(variogramLine(lake.TN.fit, 3000), type='l', ylim=c(0,2)) #this plots the line from the model 
 points(lake.TN.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.TN.fit[2,3], col="deepskyblue") 
 abline(v=1750, col="deepskyblue") 
-mtext('d', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('d', side = 3, line = -2.0, adj = .02, cex = 1.0)
 # middle 
 plot(variogramLine(wl.TN.fit, 3000), type='l', ylim=c(0,2)) 
 points(wl.TN.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.TN.fit[2,3], col="mediumpurple") #this plots the R range 
-mtext('e', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('e', side = 3, line = -2.0, adj = .02, cex = 1.0)
 # right 
 plot(variogramLine(stream.TN.fit, 3000), type='l', ylim=c(0,3)) 
 points(stream.TN.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.TN.fit[2,3], col="green3") 
 abline(v=3000, col="green3") 
-mtext('f', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('f', side = 3, line = -2.0, adj = .02, cex = 1.0)
 
 #Chla 
 plot(variogramLine(lake.CHL.fit, 3000), type='l', ylim=c(0,2)) #this plots the line from the model 
 points(lake.CHL.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.CHL.fit[2,3], col="deepskyblue") 
 abline(v=1800, col="deepskyblue") 
-mtext('g', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('g', side = 3, line = -2.0, adj = .02, cex = 1.0)
 # middle 
 plot(variogramLine(wl.CHL.fit, 3000), type='l', ylim=c(0,3.5)) 
 points(wl.CHL.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.CHL.fit[2,3], col="mediumpurple") #this plots the R range 
 abline(v=1500, col="mediumpurple")
-mtext('h', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('h', side = 3, line = -2.0, adj = .02, cex = 1.0)
 # right 
 plot(variogramLine(stream.CHL.fit, 3000), type='l', ylim=c(0,3)) 
 points(stream.CHL.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.CHL.fit[2,3], col="green3") 
 abline(v=1700, col="green3") 
-mtext('i', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('i', side = 3, line = -2.0, adj = .02, cex = 1.0)
 
 #AQM 
 plot(variogramLine(lake.aq.fit, 3000), type='l', ylim=c(0,2.5)) #this plots the line from the model 
 points(lake.aq.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.aq.fit[2,3], col="deepskyblue") 
-mtext('j', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('j', side = 3, line = -2.0, adj = .02, cex = 1.0)
 # middle 
 plot(variogramLine(wl.aq.fit, 3000), type='l', ylim=c(0,4)) 
 points(wl.aq.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.aq.fit[2,3], col="mediumpurple") #this plots the R range 
-mtext('k', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('k', side = 3, line = -2.0, adj = .02, cex = 1.0)
 # right 
 plot(variogramLine(stream.aq.fit, 3000), type='l', ylim=c(0,2)) 
 points(stream.aq.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.aq.fit[2,3], col="green3") 
 abline(v=1630, col="green3") 
-mtext('l', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('l', side = 3, line = -2.0, adj = .02, cex = 1.0)
 
 #MMI bottom left 
 plot(variogramLine(lake.MMI.fit, 3000), type='l', ylim=c(0,300)) #this plots the line from the model 
 points(lake.MMI.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.MMI.fit[2,3], col="deepskyblue") 
-mtext('m', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('m', side = 3, line = -2.0, adj = .02, cex = 1.0)
 #bottom middle 
 plot(variogramLine(wl.MMI.fit, 3000), type='l', ylim=c(0,400)) 
 points(wl.MMI.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.MMI.fit[2,3], col="mediumpurple") #this plots the R range 
-mtext('n', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('n', side = 3, line = -2.0, adj = .02, cex = 1.0)
 #bottom right 
 plot(variogramLine(stream.MMI.fit, 3000), type='l', ylim=c(0,500)) 
 points(stream.MMI.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.MMI.fit[2,3], col="green3") 
 abline(v=2780, col="green3") 
-mtext('o', side = 3, line = -2.5, adj = .02, cex = 1.5)
+mtext('o', side = 3, line = -2.0, adj = .02, cex = 1.0)
 
 #add axis labels
 mtext("Distance (km)", side = 1, outer = TRUE, cex = 1, line = 1)

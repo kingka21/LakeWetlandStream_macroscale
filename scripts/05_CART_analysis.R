@@ -1,5 +1,5 @@
 ### Written by Katelyn King 
-#### Start Date: March 
+#### Start Date: March 2018
 
 
 ### load libraries 
@@ -14,6 +14,7 @@ library(mapdata)
 library(ggmap)
 library(RColorBrewer)
 library(agricolae)
+library(ggsn)
 
 ###  Load in the data 
 lake <- read.csv("Data/NLA2012_data.csv", header=T)
@@ -41,19 +42,29 @@ fitall<-rpart(logTP ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_AR
 # Prune based on 1SE rule  (xerror + xstd of the minimum and then pruning at the row with xerror just below that)
 plotcp(fitall, main="TP pruning") #chose the CP value that is furthest left under the line (1SE above the min error)
 printcp(fitall) #shows a table of CP values and xerror/xstd
-fitall1<-prune(fitall, cp=0.012552)  #use the CP value from the row where pruning should occur
+SE<-min(fitall$cptable[,4]) + min(fitall$cptable[,5])  #(xerror + xstd of the minimum)
+SE2<-min(fitall$cptable[,4]) + min(fitall$cptable[,5])
+xer<-fitall$cptable[,4] > SE
+cp<-fitall$cptable[7,"CP"]
+fitall1<-prune(fitall, cp=cp)  #use the CP value from the row where pruning should occur
+saveRDS(fitall1, "Output/TPtree.rds")
 post(fitall1, title = "Drivers of TP in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE)  #horizontal = TRUE
 summary(fitall1) #investigate competitor splits
+#get Rsq value for the model 
+tcp<-printcp(fitall1)
+rsq.val <- 1-tcp[,c(3,4)]  
+rsq.val[nrow(rsq.val),1]  # R2 = 0.30 
+
 ## use partykit package to make maps and graphs  
 pfit <- as.party(fitall1)  #change the format to fit this package
 plot(pfit)
 TPdata<-data_party(pfit)
 TPdata$class<-TPdata$'(fitted)'
 TPdata$class<-as.factor(TPdata$class)
-TPdata$newclass<-recode(TPdata$class,"3=1;5=2;6=3;9=4;10=5;13=6;14=7;16=8;17=9")
+TPdata$newclass<-recode(TPdata$class,"3=1;4=2;7=3;8=4;10=5;12=6;13=7")
 
 #get the US background map 
 devtools::install_github("dkahle/ggmap")
@@ -63,33 +74,35 @@ p<-ggplot(data = usa) +
   coord_fixed(1.3) 
 
 #terminal map a
-datasub<-filter(TPdata, newclass== '1' | newclass== '2' | newclass== '3'| newclass== '4' | newclass== '5' )
-p+ geom_point(data=datasub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(1, 16, 1, 16, 16),  name = "Class")+
-  scale_colour_brewer(palette = 'Paired', name = "Class")
+datasub<-filter(TPdata, newclass== '1' | newclass== '2' | newclass== '3'| newclass== '4')
+tp1<-p+ geom_point(data=datasub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+  scale_shape_manual(values=c(1, 16, 1, 16),  name = "Class")+
+  scale_colour_brewer(palette = 'Paired', name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
+                                                                  
 
 #Terminal map b
-datasub2<-filter(TPdata, newclass== '6' | newclass== '7' | newclass== '8'| newclass== '9' )
-p+ geom_point(data=datasub2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(16, 1, 16, 16),  name = "Class")+
-  scale_colour_manual(values = c("red2", 'sandybrown', "darkorange2", 'plum3'), name = "Class")
+datasub2<-filter(TPdata, newclass== '5' | newclass== '6' | newclass== '7' )
+tp2<-p+ geom_point(data=datasub2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+  scale_shape_manual(values=c(1, 16, 16),  name = "Class")+
+  scale_colour_manual(values = c('lightcoral', "red2", 'sandybrown'), name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
-p+ geom_point(data=data16, aes(x = LON_DD83, y = LAT_DD83, colour=("Lake/Stream") )) + 
-  geom_point(data=data17, aes(x = LON_DD83, y = LAT_DD83, colour=("Wetland") )) +
-  scale_colour_manual(values = c("darkorange2", 'plum3'), name = "Ecosystem Type")
 
 anova(lm(TPdata$logTP~TPdata$class))
-out<-LSD.test(TPdata$logTP,TPdata$newclass, 3637, 1.153, alpha=0.05)  #specify the DF and MSE of the residuals
+out<-LSD.test(TPdata$logTP,TPdata$newclass, 3639, 1.198, alpha=0.05)  #specify the DF and MSE of the residuals
 boxplot(logTP~newclass, data=TPdata, xlab="class", ylab="logTP", col=brewer.pal(9,'Paired'))
 text(1, 2.8, labels='a', col='black') 
-text(2, 2.6, labels='b', col='black') 
-text(3, 3.7, labels='c', col='black') 
-text(4, 3.15, labels='d', col='black') 
-text(5, 4.1, labels='e', col='black') 
-text(6, 4, labels='e', col='black') 
-text(7, 4.75, labels='f', col='black') 
-text(8, 4, labels='e', col='black') 
-text(9, 5.65, labels='g', col='black') 
+text(2, 3.5, labels='b', col='black') 
+text(3, 3.1, labels='c', col='black') 
+text(4, 4, labels='d', col='black') 
+text(5, 4.5, labels='e', col='black') 
+text(6, 4, labels='d,e', col='black') 
+text(7, 5.5, labels='f', col='black') 
 
 ######## TN ######### 
 hist(allecos$TN)
@@ -102,15 +115,28 @@ TNall<-rpart(logTN ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_ARE
 
 plotcp(TNall)
 printcp(TNall)
-TNall1<-prune(TNall, cp= 0.015711)
+#prune the tree
+SE<-min(TNall$cptable[,4]) + TNall$cptable[which.min(TNall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
+TNall$cptable[,4] > SE
+cp<-TNall$cptable[8,"CP"]
+TNall1<-prune(TNall, cp= cp)
+saveRDS(TNall1, "Output/TNtree.rds")
 post(TNall1, title = "Drivers of TN in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-summary(TNall1)
+
+summary(TNall1) #investigate competitor splits
+
+#get Rsq value for the model 
+tcp<-printcp(TNall1)
+rsq.val <- 1-tcp[,c(3,4)]  
+rsq.val[nrow(rsq.val),1]  # R2for TN  = 0.46
+
+#Plotting and mapping
 pfitTN <- as.party(TNall1)  #change the format to fit this package
 plot(pfitTN)
-TNdata<-data_party(pfit)
+TNdata<-data_party(pfitTN)
 TNdata$class<-TNdata$'(fitted)'
 TNdata$class<-as.factor(TNdata$class)
 TNdata$newclass<-recode(TNdata$class,"4=1;5=2;7=3;8=4;11=5;12=6;14=7;15=8")
@@ -118,18 +144,24 @@ TNdata$newclass<-recode(TNdata$class,"4=1;5=2;7=3;8=4;11=5;12=6;14=7;15=8")
 #terminal map a
 TNsub<-filter(TNdata, newclass== '1' | newclass== '2' | newclass== '3'| newclass== '4' )
 p+ geom_point(data=TNsub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(1, 16, 1, 16),  name = "Class")+
-  scale_colour_brewer(palette = 'Paired', name = "Class")
+  scale_shape_manual(values=c(16, 1, 16, 1),  name = "Class")+
+  scale_colour_brewer(palette = 'Paired', name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
 #map b
 TNsub2<-filter(TNdata, newclass== '5' | newclass== '6' | newclass== '7'| newclass== '8' )
 p+ geom_point(data=TNsub2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
   scale_shape_manual(values=c(1, 16, 1, 16),  name = "Class")+
-  scale_colour_manual(values = c('lightcoral', "red2", 'sandybrown', "darkorange2"), name = "Class")
+  scale_colour_manual(values = c('lightcoral', "red2", 'sandybrown', "darkorange2"), name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
 #ANOVA
 anova(lm(TNdata$logTN~TNdata$class))
-out<-LSD.test(TNdata$logTN,TNdata$newclass, 3628, 0.8, alpha=0.05)  #specify the DF and MSE of the residuals
+out<-LSD.test(TNdata$logTN,TNdata$newclass, 3628, 0.78, alpha=0.05)  #specify the DF and MSE of the residuals
 boxplot(logTN~newclass, data=TNdata, xlab="class", ylab="logTN", col=brewer.pal(8,'Paired'))
 text(1, 3.9, labels='a', col='black')
 text(2, 4.95, labels='b', col='black')
@@ -149,15 +181,27 @@ CHLAall<-rpart(logCHLA ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + WS_AREA + Type + 
                  WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
                method="anova", data=allecos)
 
-# prune Chla
+# prune tree
 plotcp(CHLAall)
 printcp(CHLAall)
+SE<-min(CHLAall$cptable[,4]) + CHLAall$cptable[which.min(CHLAall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
+CHLAall$cptable[,4] > SE
+CHLAall$cptable[7,"CP"]
 CHLA1<-prune(CHLAall, cp=0.014334)
 post(CHLA1, title = "Drivers of Chla in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-summary(CHLA1)
+saveRDS(CHLA1, "Output/CHLAtree.rds")
+
+summary(CHLA1) #investigate splits
+
+#get Rsq value for the model 
+tcp<-printcp(CHLA1)
+rsq.val <- 1-tcp[,c(3,4)]  
+rsq.val[nrow(rsq.val),1]  # R2 for CHLA  = 0.30
+
+#plotting and mapping 
 chlafit <- as.party(CHLA1)  #change the format to fit this package
 plot(chlafit)
 chladata<-data_party(chlafit)
@@ -168,13 +212,19 @@ chladata$newclass<-recode(chladata$class,"4=1;5=2;7=3;8=4;10=5;12=6;14=7;15=8")
 #terminal map a
 chlsub<-filter(chladata, newclass== '1' | newclass== '2' | newclass== '3'| newclass== '4' )
 p+ geom_point(data=chlsub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(1, 16, 1, 16),  name = "Class")+
-  scale_colour_brewer(palette = 'Paired', name = "Class")
+  scale_shape_manual(values=c(16, 1, 16, 16),  name = "Class")+
+  scale_colour_brewer(palette = 'Paired', name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
 chlsub2<-filter(chladata, newclass== '5' | newclass== '6' | newclass== '7' | newclass== '8' )
 p+ geom_point(data=chlsub2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
   scale_shape_manual(values=c(16, 16, 1, 16),  name = "Class")+
-  scale_colour_manual(values=c('lightcoral', "red2", 'sandybrown', 'orange'), name = "Class")
+  scale_colour_manual(values=c('lightcoral', "red2", 'sandybrown', 'orange'), name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
 #ANOVA test
 anova(lm(chladata$logCHLA~chladata$class))
@@ -202,37 +252,57 @@ AQMall<-rpart(logaqveg ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS
               method="anova", data=allecos)
 
 #no pruning needed 
-summary(AQMall)
+
 printcp(AQMall)
 plotcp(AQMall)
-post(AQMall, title = "Drivers of Aquatic Vegetation in Freshwater Ecosystems",
+
+SE<-min(AQMall$cptable[,4]) + AQMall$cptable[which.min(AQMall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
+AQMall$cptable[,4] > SE
+AQMall$cptable[5,"CP"]
+AQM1<-prune(AQMall, cp=0.01273124)
+post(AQM1, title = "Drivers of Aquatic Vegetation in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
+saveRDS(AQM1, "Output/AQMtree.rds")
 
-AQMfit <- as.party(AQMall)  #change the format to fit this package
+summary(AQM1) #investigate splits 
+
+#get Rsq value for the model 
+tcp<-printcp(AQM1)
+rsq.val <- 1-tcp[,c(3,4)]  
+rsq.val[nrow(rsq.val),1]  # R2 for AQM  = 0.25
+
+#plotting and mapping
+AQMfit <- as.party(AQM1)  #change the format to fit this package
 plot(AQMfit)
 AQMdata <- data_party(AQMfit) 
 AQMdata$class<-AQMdata$'(fitted)'
 AQMdata$class<-as.factor(AQMdata$class)
-AQMdata$newclass<-recode(AQMdata$class,"4=1;5=2;6=3;9=4;11=5;12=6;13=7")
+AQMdata$newclass<-recode(AQMdata$class,"4=1;5=2;6=3;8=4;9=5")
 
 class7<-filter(AQMdata,newclass=="7")
 
 #subset of terminal classes 
-aqmL<-filter(AQMdata, newclass== '1' | newclass== '2' | newclass== '3')
-p+ geom_point(data=aqmL, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(16, 1, 1),  name = "Class")+
-  scale_colour_brewer(palette = 'Paired', name = "Class")
+aqm1<-filter(AQMdata, newclass== '1' | newclass== '2' | newclass== '3')
+p+ geom_point(data=aqm1, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+  scale_shape_manual(values=c(16, 16, 1),  name = "Class")+
+  scale_colour_brewer(palette = 'Paired', name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
-aqmR<-filter(AQMdata, newclass== '4' | newclass== '5' | newclass== '6' | newclass== '7' )
-p+ geom_point(data=aqmR, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(16, 16, 1, 1),  name = "Class")+
-  scale_colour_manual(values=c('green4', 'lightcoral', "red2", 'sandybrown', 'orange'), name = "Class")
+aqm2<-filter(AQMdata, newclass== '4' | newclass== '5' )
+p+ geom_point(data=aqm2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+  scale_shape_manual(values=c(16, 16),  name = "Class")+
+  scale_colour_manual(values=c('green4', 'lightcoral'), name = "Class")+
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
 #ANOVA test
 anova(lm(AQMdata$logaqveg~AQMdata$class))
-out<-LSD.test(AQMdata$logaqveg,AQMdata$newclass, 3621, 1.76, alpha=0.05)
+out<-LSD.test(AQMdata$logaqveg,AQMdata$newclass, 3623, 1.82, alpha=0.05)
 boxplot(logaqveg~newclass,
         data=AQMdata,
         xlab="class", 
@@ -240,10 +310,9 @@ boxplot(logaqveg~newclass,
 text(1, .25, labels='a', col='black')
 text(2, 1.35, labels='b', col='black')
 text(3, 1.55, labels='b', col='black')
-text(4, 1.35, labels='b', col='black')
-text(5, 2.25, labels='c', col='black')
-text(6, 3.15, labels='d', col='black')
-text(7, 3.4, labels='d', col='black')
+text(4, 2.35, labels='c', col='black')
+text(5, 3.25, labels='d', col='black')
+
 
 #################### MMI ############# 
 hist(allecos$MMI) # normal, don't transform 
@@ -253,13 +322,24 @@ MMIall<-rpart(MMI ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + WS_AREA + DEPTH
               method="anova", data=allecos)
 plotcp(MMIall)
 printcp(MMIall)
+SE<-min(MMIall$cptable[,4]) + MMIall$cptable[which.min(MMIall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
+MMIall$cptable[,4] > SE
+MMIall$cptable[5,"CP"]
 MMIall1<-prune(MMIall, cp=0.014358)
 post(MMIall1, title = "Drivers of MMI in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
+saveRDS(MMIall1, "Output/MMItree.rds")
 
-summary(MMIall1)
+summary(MMIall1) #investigate splits 
+
+#get Rsq value for the model 
+tcp<-printcp(MMIall1)
+rsq.val <- 1-tcp[,c(3,4)]  
+rsq.val[nrow(rsq.val),1]  # R2 for MMI  = 0.13
+
+#plotting and mapping
 MMIfit <- as.party(MMIall1)  #change the format to fit this package
 plot(MMIfit)
 MMIdata <- data_party(MMIfit) 
@@ -268,19 +348,25 @@ MMIdata$class<-as.factor(MMIdata$class)
 MMIdata$newclass<-car::recode(MMIdata$class,"3=1;5=2;6=3;8=4;9=5")
 
 #subset of terminal classes 
-mmiL<-filter(MMIdata, newclass== '1' | newclass== '2' | newclass== '3')
-p+ geom_point(data=mmiL, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+mmi1<-filter(MMIdata, newclass== '1' | newclass== '2' | newclass== '3')
+p+ geom_point(data=mmi1, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
   scale_shape_manual(values=c(16, 1, 1),  name = "Class")+
-  scale_colour_brewer(palette = 'Paired', name = "Class")
+  scale_colour_brewer(palette = 'Paired', name = "Class") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
-mmiR<-filter(MMIdata, newclass== '4' | newclass== '5' )
-p+ geom_point(data=mmiR, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+mmi2<-filter(MMIdata, newclass== '4' | newclass== '5' )
+p+ geom_point(data=mmi2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
   scale_shape_manual(values=c(16, 1),  name = "Class")+
-  scale_colour_manual(values=c('green4', 'lightcoral'), name = "Class")
+  scale_colour_manual(values=c('green4', 'lightcoral'), name = "Class")+
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
 #ANOVA test
 anova(lm(MMIdata$MMI~MMIdata$class))
-out<-LSD.test(MMIdata$MMI,MMIdata$newclass, 33999, 323, alpha=0.05)
+out<-LSD.test(MMIdata$MMI,MMIdata$newclass, 3399, 323, alpha=0.05)
 boxplot(MMI~newclass,
         data=MMIdata,
         xlab="class", 
@@ -292,23 +378,38 @@ text(4, 39, labels='d', col='black')
 text(5, 59, labels='e', col='black')
 
 summary(allecos)
-#this can be useful to look at R2 of each split 
-tmp <- printcp(MMIall1)
-rsq.val <- 1-tmp[,c(3,4)]  
-rsq.val[nrow(rsq.val),]  #final R2 value; x-error is the cross-validation error
 
 #back transform all of the results: opposite of natural log in the "e"= 2.718281
-2.718281^3.442
-
-log(1+5)   #1.791759
-(2.718281^(1.791759))-1
-
 back_transform<-function (x) {(2.718281^(x))-1}
-back_transform(0.8627)
-back_transform(1.63)
-back_transform(1.655)
-back_transform(1.799)
-back_transform(2.148)
-back_transform(2.971)
-back_transform(3.106)
 
+#### MAP Figures #### 
+
+library(ggsn)
+library(ggplot2)
+library(ggmap)
+?map_data
+usa<-map_data("usa")  #pull out the usa map
+p<-ggplot(data = usa) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  coord_fixed(1.3) 
+
+#Figure 1 A 
+p+geom_point(data=stream, size = 1, colour="chartreuse4", aes(x = LON_DD83, y = LAT_DD83)) + 
+  geom_point(data=lake, size = 1,  colour="#3399CC", aes(x = LON_DD83, y = LAT_DD83)) + 
+  geom_point(data=wetland, size = 1, colour="#9966CC", aes(x = LON_DD83, y = LAT_DD83)) +
+  north(data = usa, symbol=3, scale=.15, location = "bottomright") + 
+  theme_bw()
+
+#Fig 1 B
+library(rgdal)
+library(tmap)
+eco9<- readOGR(dsn = "/Users/katelynking/Desktop/Aggregate_ecoregion9", layer = "Export_Output")
+jpeg('eco9map.jpeg',width = 7, height = 6, units = 'in', res = 600)
+tm_shape(eco9)+
+  tm_fill('WSA9_NAME') + 
+  tm_compass(north = 0, type = 'arrow', position =c("left", "top"))
+dev.off()
+## another way to add a line 
+###theme(panel.grid.major = element_blank(), 
+      #panel.grid.minor = element_blank(),
+      #panel.background = element_rect(colour = "black", size=4, fill=NA))

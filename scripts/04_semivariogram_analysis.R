@@ -12,6 +12,7 @@ stream<-read.csv("Data/NRSA0809_data.csv", header=T)
 wetland<-read.csv("Data/NWCA2011_data.csv", header=T)
 
 ### ---- checking normality and log transformation ------ 
+##Lakes
 hist(lake$TP)
 hist(lake$TN)
 hist(lake$CHLA)
@@ -73,42 +74,42 @@ wetland.aea <- spTransform(wetland.ll, prj.new)
 
 ##################  Total Phosphorus ###################
 #lake
-lake.TP.v <- variogram(logTP~1, lake.aea, cutoff=3000, width=20)  
+lake.TP.v <- variogram(logTP~1, lake.aea, cutoff=2500, width=20)  
 min(lake.TP.v$np) #ensure there are more than 50 pairs in each bin distance 
 lake.TP.fit<-fit.variogram(lake.TP.v, vgm("Sph", "Exp")) #fit a model variogram
 lake.TP.fit #shows parameters
 
 #wetland
 wlTPnoNAs<-wetland.aea[!(is.na(wetland.aea$logTP)),] 
-wl.TP.v <- variogram(logTP~1, wlTPnoNAs, cutoff=3000, width=20)  
+wl.TP.v <- variogram(logTP~1, wlTPnoNAs, cutoff=2500, width=20)  
 min(wl.TP.v$np)
 wl.TP.fit<-vgm(model="Exp", nugget=.8, psill=1.9, range=605)  
 wl.TP.fit
 
 #stream
 strTPnoNAs<-stream.aea[!(is.na(stream.aea$logTP)),] 
-stream.TP.v <- variogram(logTP~1, strTPnoNAs, cutoff=3000, width=20)  
+stream.TP.v <- variogram(logTP~1, strTPnoNAs, cutoff=2500, width=20)  
 min(stream.TP.v$np)
 stream.TP.fit <- fit.variogram(stream.TP.v, vgm("Sph", "Exp"))
 stream.TP.fit
 
 ########################### Total Nitrogen #############################
 #lake
-lake.TN.v <- variogram(logTN~1, lake.aea, cutoff=3000, width=20)
+lake.TN.v <- variogram(logTN~1, lake.aea, cutoff=2500, width=20)
 min(lake.TN.v$np)
 lake.TN.fit <- fit.variogram(lake.TN.v, vgm("Sph", "Exp"))
 lake.TN.fit #shows parameters
 
 #wetland
 wlTNnoNAs<-wetland.aea[!(is.na(wetland.aea$logTN)),] 
-wl.TN.v <- variogram(logTN~1, wlTNnoNAs, cutoff=3000, width=20)  
+wl.TN.v <- variogram(logTN~1, wlTNnoNAs, cutoff=2500, width=20)  
 min(wl.TN.v$np)
 wl.TN.fit <- fit.variogram(wl.TN.v, vgm("Sph", "Exp"))
 wl.TN.fit
 
 #stream
 strTNnoNAs<-stream.aea[!(is.na(stream.aea$logTN)),] 
-stream.TN.v <- variogram(logTN~1, strTNnoNAs, cutoff=3000, width=20)  
+stream.TN.v <- variogram(logTN~1, strTNnoNAs, cutoff=2500, width=20)  
 min(stream.TN.v$np)
 stream.TN.fit <- fit.variogram(stream.TN.v, vgm("Sph", "Exp"))
 stream.TN.fit 
@@ -116,167 +117,178 @@ stream.TN.fit
 ########################### Chla #############################
 #lake
 LCHnoNAs<-lake.aea[!(is.na(lake.aea$logCHLA)),] 
-lake.CHL.v <- variogram(logCHLA~1, LCHnoNAs, cutoff=3000, width=20)  
+lake.CHL.v <- variogram(logCHLA~1, LCHnoNAs, cutoff=2500, width=20)  
 min(lake.CHL.v$np)
 lake.CHL.fit<-fit.variogram(lake.CHL.v, vgm(model="Sph", "Exp") )
-lake.CHL.fit #shows best fit! and gives parameters
+lake.CHL.fit 
 
 #wetland 
 wlCHnoNAs<-wetland.aea[!(is.na(wetland.aea$logCHLA)),] 
-wl.CHL.v <- variogram(logCHLA~1, wlCHnoNAs, cutoff=3000, width=20)  
+wl.CHL.v <- variogram(logCHLA~1, wlCHnoNAs, cutoff=2500, width=20)  
 min(wl.CHL.v$np)      
 wl.CHL.fit <- vgm(model="Sph", nugget=1.1, psill=1.2, range=101)
 wl.CHL.fit
 
 #stream
 strCHnoNAs<-stream.aea[!(is.na(stream.aea$logCHLA)),] 
-stream.CHL.v <- variogram(logCHLA~1, strCHnoNAs, cutoff=3000, width=20)  
+stream.CHL.v <- variogram(logCHLA~1, strCHnoNAs, cutoff=2500, width=20)  
 min(stream.CHL.v$np)
 stream.CHL.fit <- fit.variogram(stream.CHL.v, vgm("Sph", "Exp"))
-stream.CHL.fit #shows best fit! and gives parameters
-
-
-#################################### MMI ##################################
-## LAKES
-LMMnoNAs<-lake.aea[!(is.na(lake.aea$MMI)),] 
-lake.MMI.v<- variogram(MMI~1, LMMnoNAs, cutoff=3000, width=20)   
-min(lake.MMI.v$np)
-lake.MMI.fit <- fit.variogram(lake.MMI.v, vgm("Sph", "Exp"))
-lake.MMI.fit
-
-###wetland
-wlMMnoNAs<-wetland.aea[!(is.na(wetland.aea$MMI)),] 
-wl.MMI.v <- variogram(MMI~1, wlMMnoNAs, cutoff=3000, width=20)  
-min(wl.MMI.v$np)
-wl.MMI.fit <- vgm(model="Exp", nugget = 100, psill=200, range=146)
-
-##streams##
-strMMnoNAs<-stream.aea[!(is.na(stream.aea$MMI)),] 
-stream.MMI.v<- variogram(MMI~1, strMMnoNAs, cutoff=3000, width=20)  
-min(stream.MMI.v$np)
-stream.MMI.fit<-vgm(model="Sph", nugget = 250, psill=135, range=207)
-stream.MMI.fit
+stream.CHL.fit
 
 #################################### AQM ##################################
 #lake 
 LaqnoNAs<-lake.aea[!(is.na(lake.aea$logaqveg)),] 
-lake.aq.v<- variogram(logaqveg~1, LaqnoNAs, cutoff=3000, width=20)
+lake.aq.v<- variogram(logaqveg~1, LaqnoNAs, cutoff=2500, width=20)
 min(lake.aq.v$np)
 lake.aq.fit <- fit.variogram(lake.aq.v, vgm( "Sph", "Exp"))
 lake.aq.fit
 
 ###wetland 
 wlaqnoNAs<-wetland.aea[!(is.na(wetland.aea$logaqveg)),] 
-wl.aq.v <- variogram(logaqveg~1, wlaqnoNAs, cutoff=3000, width=20)  
+wl.aq.v <- variogram(logaqveg~1, wlaqnoNAs, cutoff=2500, width=20)  
 min(wl.aq.v$np)
 wl.aq.fit<- vgm("Sph", nugget=1.4, psill=2.1, range=1335)
 wl.aq.fit
 
 #streams##
 straqnoNAs<-stream.aea[!(is.na(stream.aea$logaqveg)),] 
-stream.aq.v <- variogram(logaqveg~1, straqnoNAs, cutoff=3000, width=20)  
+stream.aq.v <- variogram(logaqveg~1, straqnoNAs, cutoff=2500, width=20)  
 min(stream.aq.v$np)
 stream.aq.fit <- fit.variogram(stream.aq.v, vgm( "Sph", "Exp"))
 stream.aq.fit
 
-########################################################
-##-------------------------- PLOT --------------------###
-jpeg('15panel.jpeg',width = 7, height = 9, units = 'in', res = 600)
+#################################### MMI ##################################
+## LAKES
+LMMnoNAs<-lake.aea[!(is.na(lake.aea$MMI)),] 
+lake.MMI.v<- variogram(MMI~1, LMMnoNAs, cutoff=2500, width=20)   
+min(lake.MMI.v$np)
+lake.MMI.fit <- fit.variogram(lake.MMI.v, vgm("Sph", "Exp"))
+lake.MMI.fit
+
+###wetland
+wlMMnoNAs<-wetland.aea[!(is.na(wetland.aea$MMI)),] 
+wl.MMI.v <- variogram(MMI~1, wlMMnoNAs, cutoff=2500, width=20)  
+min(wl.MMI.v$np)
+wl.MMI.fit <- vgm(model="Sph", nugget = 86, psill=200, range=230)
+wl.MMI.fit
+
+##streams##
+strMMnoNAs<-stream.aea[!(is.na(stream.aea$MMI)),] 
+stream.MMI.v<- variogram(MMI~1, strMMnoNAs, cutoff=2500, width=20)  
+min(stream.MMI.v$np)
+stream.MMI.fit<-vgm(model="Sph", nugget = 250, psill=135, range=207)
+stream.MMI.fit
+
+
+
+#####################   PLOT    ##################
+
+jpeg('15panel.jpeg',width = 6, height = 7, units = 'in', res = 600)
 par(mfrow=c(5,3))
-par(mar=c(3,3,0,0), oma=c(3,3,1,1))
+par(mar=c(3,3,0,0), oma=c(3,3,2,1))
 
 #top left panel 
-plot(variogramLine(lake.TP.fit, 3000), type='l', ylim=c(0,2)) 
+plot(variogramLine(lake.TP.fit, 2500), type='l', ylim=c(0,2)) 
 points(lake.TP.v[,2:3], pch=21, bg="deepskyblue", col='black')  
 abline(v=lake.TP.fit[2,3], col="deepskyblue") 
-abline(v=2050, col="deepskyblue") 
-mtext('a', side = 3, line = -2.0, adj = .02, cex = 1.0)
+abline(v=1950, col="deepskyblue") 
+mtext('a', side = 3, line = -1.5, adj = .02, cex = 1.0)
 #top middle 
-plot(variogramLine(wl.TP.fit, 3000), type='l', ylim=c(0,3.5)) #this plots the line from the model 
+plot(variogramLine(wl.TP.fit, 2500), type='l', ylim=c(0,3.5)) #this plots the line from the model 
 points(wl.TP.v[,2:3], pch=21, bg='mediumpurple',  col='black')  #this plots the points 
 abline(v=wl.TP.fit[2,3], col="mediumpurple") #this plots the R range 
 abline(v=1930, col="mediumpurple") #this plots the R range 
-mtext('b', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('b', side = 3, line = -1.5, adj = .02, cex = 1.0)
+
 #top right 
-plot(variogramLine(stream.TP.fit, 3000), type='l', ylim=c(0,2)) #this plots the line from the model 
+plot(variogramLine(stream.TP.fit, 2500), type='l', ylim=c(0,2)) #this plots the line from the model 
 points(stream.TP.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.TP.fit[2,3], col="green3") 
 abline(v=1950, col="green3") #this plots the R range 
-mtext('c', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('c', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #left TN 
-plot(variogramLine(lake.TN.fit, 3000), type='l', ylim=c(0,2)) #this plots the line from the model 
+plot(variogramLine(lake.TN.fit, 2500), type='l', ylim=c(0,2)) #this plots the line from the model 
 points(lake.TN.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.TN.fit[2,3], col="deepskyblue") 
 abline(v=1750, col="deepskyblue") 
-mtext('d', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('d', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # middle 
-plot(variogramLine(wl.TN.fit, 3000), type='l', ylim=c(0,2)) 
+plot(variogramLine(wl.TN.fit, 2500), type='l', ylim=c(0,2)) 
 points(wl.TN.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.TN.fit[2,3], col="mediumpurple") #this plots the R range 
-mtext('e', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('e', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # right 
-plot(variogramLine(stream.TN.fit, 3000), type='l', ylim=c(0,3)) 
+plot(variogramLine(stream.TN.fit, 2500), type='l', ylim=c(0,3)) 
 points(stream.TN.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.TN.fit[2,3], col="green3") 
-abline(v=3000, col="green3") 
-mtext('f', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('f', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #Chla 
-plot(variogramLine(lake.CHL.fit, 3000), type='l', ylim=c(0,2)) #this plots the line from the model 
+plot(variogramLine(lake.CHL.fit, 2500), type='l', ylim=c(0,2)) #this plots the line from the model 
 points(lake.CHL.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.CHL.fit[2,3], col="deepskyblue") 
 abline(v=1800, col="deepskyblue") 
-mtext('g', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('g', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # middle 
-plot(variogramLine(wl.CHL.fit, 3000), type='l', ylim=c(0,3.5)) 
+plot(variogramLine(wl.CHL.fit, 2500), type='l', ylim=c(0,3.5)) 
 points(wl.CHL.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.CHL.fit[2,3], col="mediumpurple") #this plots the R range 
 abline(v=1500, col="mediumpurple")
-mtext('h', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('h', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # right 
-plot(variogramLine(stream.CHL.fit, 3000), type='l', ylim=c(0,3)) 
+plot(variogramLine(stream.CHL.fit, 2500), type='l', ylim=c(0,3)) 
 points(stream.CHL.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.CHL.fit[2,3], col="green3") 
 abline(v=1700, col="green3") 
-mtext('i', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('i', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #AQM 
-plot(variogramLine(lake.aq.fit, 3000), type='l', ylim=c(0,2.5)) #this plots the line from the model 
+plot(variogramLine(lake.aq.fit, 2500), type='l', ylim=c(0,2.5)) #this plots the line from the model 
 points(lake.aq.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.aq.fit[2,3], col="deepskyblue") 
-mtext('j', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('j', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # middle 
-plot(variogramLine(wl.aq.fit, 3000), type='l', ylim=c(0,4)) 
+plot(variogramLine(wl.aq.fit, 2500), type='l', ylim=c(0,4)) 
 points(wl.aq.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.aq.fit[2,3], col="mediumpurple") #this plots the R range 
-mtext('k', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('k', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # right 
-plot(variogramLine(stream.aq.fit, 3000), type='l', ylim=c(0,2)) 
+plot(variogramLine(stream.aq.fit, 2500), type='l', ylim=c(0,2)) 
 points(stream.aq.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.aq.fit[2,3], col="green3") 
 abline(v=1630, col="green3") 
-mtext('l', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('l', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #MMI bottom left 
-plot(variogramLine(lake.MMI.fit, 3000), type='l', ylim=c(0,300)) #this plots the line from the model 
+plot(variogramLine(lake.MMI.fit, 2500), type='l', ylim=c(0,300)) #this plots the line from the model 
 points(lake.MMI.v[,2:3], pch=21, bg='deepskyblue', col="black")  
 abline(v=lake.MMI.fit[2,3], col="deepskyblue") 
-mtext('m', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('m', side = 3, line = -1.5, adj = .02, cex = 1.0)
 #bottom middle 
-plot(variogramLine(wl.MMI.fit, 3000), type='l', ylim=c(0,400)) 
+plot(variogramLine(wl.MMI.fit, 2500), type='l', ylim=c(0,400)) 
 points(wl.MMI.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
 abline(v=wl.MMI.fit[2,3], col="mediumpurple") #this plots the R range 
-mtext('n', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('n', side = 3, line = -1.5, adj = .02, cex = 1.0)
 #bottom right 
-plot(variogramLine(stream.MMI.fit, 3000), type='l', ylim=c(0,500)) 
+plot(variogramLine(stream.MMI.fit, 2500), type='l', ylim=c(0,500)) 
 points(stream.MMI.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
 abline(v=stream.MMI.fit[2,3], col="green3") 
 abline(v=2780, col="green3") 
-mtext('o', side = 3, line = -2.0, adj = .02, cex = 1.0)
+mtext('o', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #add axis labels
 mtext("Distance (km)", side = 1, outer = TRUE, cex = 1, line = 1)
 mtext("Semivariance", side = 2, outer = TRUE, cex = 1, line = 1)
+
+mtext( 'Lake', side=3, line=0.25, adj=0.18, outer=TRUE ) # 3=top, line=where in the margin, adj=left to right adjustment
+mtext( 'Wetland', side=3, line=0.25, adj=0.52, outer=TRUE ) 
+mtext( 'Stream', side=3, line=0.25, adj=0.87, outer=TRUE ) 
+mtext( 'TP', side=2, line=-0.5, adj=0.934, outer=TRUE ) # side 2=left #line is which MAR line starting at 0 and counting out
+mtext( 'TN', side=2, line=-0.5, adj=0.725, outer=TRUE )
+mtext( 'CHL', side=2, line=-0.5, adj=0.523, outer=TRUE )
+mtext( 'AqVeg', side=2,  line=-0.5, adj=0.3,outer=TRUE )
+mtext( 'MMI', side=2, line=-0.5, adj=0.12, outer=TRUE )
 
 dev.off()

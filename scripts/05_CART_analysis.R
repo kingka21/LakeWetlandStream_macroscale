@@ -44,10 +44,10 @@ plotcp(fitall, main="TP pruning") #chose the CP value that is furthest left unde
 printcp(fitall) #shows a table of CP values and xerror/xstd
 SE<-min(fitall$cptable[,4]) + min(fitall$cptable[,5])  #(xerror + xstd of the minimum)
 SE2<-min(fitall$cptable[,4]) + min(fitall$cptable[,5])
-xer<-fitall$cptable[,4] > SE
+fitall$cptable[,4] > SE
 cp<-fitall$cptable[7,"CP"]
 fitall1<-prune(fitall, cp=cp)  #use the CP value from the row where pruning should occur
-saveRDS(fitall1, "Output/TPtree.rds")
+#saveRDS(fitall1, "Output/TPtree.rds")
 post(fitall1, title = "Drivers of TP in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
@@ -120,7 +120,7 @@ SE<-min(TNall$cptable[,4]) + TNall$cptable[which.min(TNall$cptable[,4]),"xstd"] 
 TNall$cptable[,4] > SE
 cp<-TNall$cptable[8,"CP"]
 TNall1<-prune(TNall, cp= cp)
-saveRDS(TNall1, "Output/TNtree.rds")
+#saveRDS(TNall1, "Output/TNtree.rds")
 post(TNall1, title = "Drivers of TN in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
@@ -131,7 +131,7 @@ summary(TNall1) #investigate competitor splits
 #get Rsq value for the model 
 tcp<-printcp(TNall1)
 rsq.val <- 1-tcp[,c(3,4)]  
-rsq.val[nrow(rsq.val),1]  # R2for TN  = 0.46
+rsq.val[nrow(rsq.val),1]  # R2 for TN  = 0.46
 
 #Plotting and mapping
 pfitTN <- as.party(TNall1)  #change the format to fit this package
@@ -186,13 +186,13 @@ plotcp(CHLAall)
 printcp(CHLAall)
 SE<-min(CHLAall$cptable[,4]) + CHLAall$cptable[which.min(CHLAall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
 CHLAall$cptable[,4] > SE
-CHLAall$cptable[7,"CP"]
-CHLA1<-prune(CHLAall, cp=0.014334)
+cp<-CHLAall$cptable[8,"CP"]
+CHLA1<-prune(CHLAall, cp=cp)
 post(CHLA1, title = "Drivers of Chla in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-saveRDS(CHLA1, "Output/CHLAtree.rds")
+#saveRDS(CHLA1, "Output/CHLAtree.rds")
 
 summary(CHLA1) #investigate splits
 
@@ -251,20 +251,18 @@ AQMall<-rpart(logaqveg ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS
                 WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
               method="anova", data=allecos)
 
-#no pruning needed 
-
+#prune tree
 printcp(AQMall)
 plotcp(AQMall)
-
 SE<-min(AQMall$cptable[,4]) + AQMall$cptable[which.min(AQMall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
 AQMall$cptable[,4] > SE
-AQMall$cptable[5,"CP"]
-AQM1<-prune(AQMall, cp=0.01273124)
+cp<-AQMall$cptable[5,"CP"]
+AQM1<-prune(AQMall, cp=cp)
 post(AQM1, title = "Drivers of Aquatic Vegetation in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-saveRDS(AQM1, "Output/AQMtree.rds")
+#saveRDS(AQM1, "Output/AQMtree.rds")
 
 summary(AQM1) #investigate splits 
 
@@ -280,8 +278,6 @@ AQMdata <- data_party(AQMfit)
 AQMdata$class<-AQMdata$'(fitted)'
 AQMdata$class<-as.factor(AQMdata$class)
 AQMdata$newclass<-recode(AQMdata$class,"4=1;5=2;6=3;8=4;9=5")
-
-class7<-filter(AQMdata,newclass=="7")
 
 #subset of terminal classes 
 aqm1<-filter(AQMdata, newclass== '1' | newclass== '2' | newclass== '3')
@@ -324,13 +320,13 @@ plotcp(MMIall)
 printcp(MMIall)
 SE<-min(MMIall$cptable[,4]) + MMIall$cptable[which.min(MMIall$cptable[,4]),"xstd"] #(xerror + xstd of the minimum)
 MMIall$cptable[,4] > SE
-MMIall$cptable[5,"CP"]
-MMIall1<-prune(MMIall, cp=0.014358)
+cp<-MMIall$cptable[5,"CP"]
+MMIall1<-prune(MMIall, cp=cp)
 post(MMIall1, title = "Drivers of MMI in Freshwater Ecosystems",
      filename = '', 
      digits = 4,
      use.n = TRUE, horizontal = TRUE)
-saveRDS(MMIall1, "Output/MMItree.rds")
+#saveRDS(MMIall1, "Output/MMItree.rds")
 
 summary(MMIall1) #investigate splits 
 
@@ -378,8 +374,9 @@ text(4, 39, labels='d', col='black')
 text(5, 59, labels='e', col='black')
 
 summary(allecos)
+quantile(allecos$WS_AREA, prob = c(0.05, 0.95), na.rm=TRUE)
 
-#back transform all of the results: opposite of natural log in the "e"= 2.718281
+#back transform all of the results: opposite of natural is "e"= 2.718281
 back_transform<-function (x) {(2.718281^(x))-1}
 
 #### MAP Figures #### 
@@ -394,20 +391,36 @@ p<-ggplot(data = usa) +
   coord_fixed(1.3) 
 
 #Figure 1 A 
-p+geom_point(data=stream, size = 1, colour="chartreuse4", aes(x = LON_DD83, y = LAT_DD83)) + 
-  geom_point(data=lake, size = 1,  colour="#3399CC", aes(x = LON_DD83, y = LAT_DD83)) + 
-  geom_point(data=wetland, size = 1, colour="#9966CC", aes(x = LON_DD83, y = LAT_DD83)) +
-  north(data = usa, symbol=3, scale=.15, location = "bottomright") + 
-  theme_bw()
+points<-select(allecos, LON_DD83, LAT_DD83, Type)
+points$Type<-ordered(points$Type, levels=c("Lake", "Wetland", "Stream"))
+p+geom_point(data=points, size = 1, aes(x = LON_DD83, y = LAT_DD83, colour=Type)) + 
+  scale_colour_manual(values = c("#3399CC", "#9966CC", "chartreuse4" )) + 
+  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
+  scale_fill_manual('Freshwater Type') +
+  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) ) +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") 
+
 
 #Fig 1 B
 library(rgdal)
 library(tmap)
 eco9<- readOGR(dsn = "/Users/katelynking/Desktop/Aggregate_ecoregion9", layer = "Export_Output")
+eco9@data$id = rownames(eco9@data)
+eco.points = fortify(eco9, region="id")
+eco.df= plyr::join(eco.points, eco9@data, by="id")
+
+ggplot(eco.df) + 
+  aes(long,lat,group=group,fill=WSA9) + 
+  geom_polygon() +
+  geom_path(color="white") +
+  coord_equal() +
+  scale_fill_brewer("Ecoregion")
+
+#using TMAP
 jpeg('eco9map.jpeg',width = 7, height = 6, units = 'in', res = 600)
 tm_shape(eco9)+
   tm_fill('WSA9_NAME') + 
-  tm_compass(north = 0, type = 'arrow', position =c("left", "top"))
+  tm_compass(north = 0, type = 'arrow', position =c("right", "bottom"))
 dev.off()
 ## another way to add a line 
 ###theme(panel.grid.major = element_blank(), 

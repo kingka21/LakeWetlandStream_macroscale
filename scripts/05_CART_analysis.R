@@ -21,7 +21,7 @@ lake <- read.csv("Data/NLA2012_data.csv", header=T)
 stream<-read.csv("Data/NRSA0809_data.csv", header=T)
 wetland<-read.csv("Data/NWCA2011_data.csv", header=T)
 
-### Comine all 3 ecosystems 
+### Combine all 3 ecosystems 
 allecos<-gtools::smartbind(lake, stream, wetland)
 
 ### CART analysis 
@@ -84,11 +84,23 @@ tp1<-p+ geom_point(data=datasub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass
                                                                   
 
 #Terminal map b
+#read in shapefile for the ecoregion split
+eco4<-readOGR("C:/Users/FWL/Desktop/Katelyn's Files/Eco9exports", layer="ecoregion")
+#new projection to lat long 
+prj<-CRS("+proj=longlat +datum=NAD83")
+eco4.ll<-spTransform(eco4, prj)
+plot(eco4.ll)
+
 datasub2<-filter(TPdata, newclass== '5' | newclass== '6' | newclass== '7' )
-tp2<-p+ geom_point(data=datasub2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(1, 16, 16),  name = "Class")+
-  scale_colour_manual(values = c('lightcoral', "red2", 'sandybrown'), name = "Class") +
-  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+ggplot() + 
+  geom_polygon(data=usa, aes(long, lat, group=group), 
+               fill="white", color="black") +
+  geom_polygon(data=eco4.ll, aes(long, lat, group=group),  fill="white", color="black")+
+  coord_equal() +
+  geom_point(data=datasub2, aes(x=LON_DD83, y=LAT_DD83, colour=newclass, shape=newclass)) +
+  scale_shape_manual(values=c(1,16,16), name="Class") +
+  scale_colour_manual(values=c('lightcoral', "red2", 'sandybrown'), name="Class") +
+  north(data = usa, symbol=3, scale=.12, location = "bottomright") + 
   theme_bw() + xlab("Longitude") + ylab("Latitude") + 
   theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
@@ -279,7 +291,7 @@ AQMdata$class<-AQMdata$'(fitted)'
 AQMdata$class<-as.factor(AQMdata$class)
 AQMdata$newclass<-recode(AQMdata$class,"4=1;5=2;6=3;8=4;9=5")
 
-#subset of terminal classes 
+#plot map A
 aqm1<-filter(AQMdata, newclass== '1' | newclass== '2' | newclass== '3')
 p+ geom_point(data=aqm1, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
   scale_shape_manual(values=c(16, 16, 1),  name = "Class")+
@@ -288,11 +300,23 @@ p+ geom_point(data=aqm1, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=
   theme_bw() + xlab("Longitude") + ylab("Latitude") + 
   theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
+#plot map B
+#read in shapefile for ecoregion split
+eco3<-readOGR("C:/Users/FWL/Desktop/Katelyn's Files/Eco9exports", layer="NPLTPLUMW")
+#new projection to lat long 
+eco3.ll<-spTransform(eco3, prj)
+plot(eco3.ll)
+
 aqm2<-filter(AQMdata, newclass== '4' | newclass== '5' )
-p+ geom_point(data=aqm2, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(16, 16),  name = "Class")+
-  scale_colour_manual(values=c('green4', 'lightcoral'), name = "Class")+
-  north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
+ggplot() + 
+  geom_polygon(data=usa, aes(long, lat, group=group), 
+               fill="white", color="black") +
+  geom_polygon(data=eco3.ll, aes(long, lat, group=group),  fill="white", color="black")+
+  coord_equal() +
+  geom_point(data=aqm2, aes(LON_DD83, LAT_DD83, colour=newclass, shape=newclass)) +
+  scale_shape_manual(values=c(16,16), name="Class") +
+  scale_colour_manual(values=c('green4', 'lightcoral'), name="Class") +
+  north(data = usa, symbol=3, scale=.12, location = "bottomright") + 
   theme_bw() + xlab("Longitude") + ylab("Latitude") + 
   theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
 
@@ -381,48 +405,41 @@ back_transform<-function (x) {(2.718281^(x))-1}
 
 #### MAP Figures #### 
 
-library(ggsn)
-library(ggplot2)
-library(ggmap)
-?map_data
+#Fig 1 A
+library(rgdal)
+library(tmap)
+eco9<- readOGR(dsn = "/Users/katelynking/Desktop/Aggregate_ecoregion9", layer = "Export_Output")
+
+#using TMAP package
+tm_shape(eco9)+
+  tm_fill('WSA9', title = 'Ecoregion') + 
+  tm_layout(legend.text.size = 1, legend.title.size=1.3) +
+  tm_compass(north = 0, type = 'arrow', position =c("right", "bottom"))
+
+
+#Figure 1 B
 usa<-map_data("usa")  #pull out the usa map
 p<-ggplot(data = usa) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   coord_fixed(1.3) 
 
-#Figure 1 A 
 points<-select(allecos, LON_DD83, LAT_DD83, Type)
 points$Type<-ordered(points$Type, levels=c("Lake", "Wetland", "Stream"))
+
+#add points to the US map
 p+geom_point(data=points, size = 1, aes(x = LON_DD83, y = LAT_DD83, colour=Type)) + 
   scale_colour_manual(values = c("#3399CC", "#9966CC", "chartreuse4" )) + 
-  theme_bw() + xlab("Longitude") + ylab("Latitude") + 
-  scale_fill_manual('Freshwater Type') +
-  theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) ) +
-  north(data = usa, symbol=3, scale=.1, location = "bottomright") 
-
-
-#Fig 1 B
-library(rgdal)
-library(tmap)
-eco9<- readOGR(dsn = "/Users/katelynking/Desktop/Aggregate_ecoregion9", layer = "Export_Output")
-eco9@data$id = rownames(eco9@data)
-eco.points = fortify(eco9, region="id")
-eco.df= plyr::join(eco.points, eco9@data, by="id")
-
-ggplot(eco.df) + 
-  aes(long,lat,group=group,fill=WSA9) + 
-  geom_polygon() +
-  geom_path(color="white") +
-  coord_equal() +
-  scale_fill_brewer("Ecoregion")
-
-#using TMAP
-jpeg('eco9map.jpeg',width = 7, height = 6, units = 'in', res = 600)
-tm_shape(eco9)+
-  tm_fill('WSA9_NAME') + 
-  tm_compass(north = 0, type = 'arrow', position =c("right", "bottom"))
-dev.off()
-## another way to add a line 
-###theme(panel.grid.major = element_blank(), 
-      #panel.grid.minor = element_blank(),
-      #panel.background = element_rect(colour = "black", size=4, fill=NA))
+  north(data = usa, symbol=3, scale=.1, location = "bottomright") +
+theme(panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      axis.line.x = element_blank(), 
+      axis.title.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.text.x = element_blank(),
+      axis.line.y = element_blank(), 
+      axis.title.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.text.y = element_blank(),
+      panel.background = element_rect(colour = "black", size=1, fill=NA)) +
+  theme(legend.position = c(.07, 0.2), legend.text = element_text(size=10) ) +
+  theme(legend.text=element_text(size=12) ) 

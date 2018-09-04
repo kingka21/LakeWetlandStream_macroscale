@@ -15,6 +15,8 @@ library(ggmap)
 library(RColorBrewer)
 library(agricolae)
 library(ggsn)
+library(rgdal)
+library(tmap)
 
 ###  Load in the data 
 lake <- read.csv("Data/NLA2012_data.csv", header=T)
@@ -25,14 +27,11 @@ wetland<-read.csv("Data/NWCA2011_data.csv", header=T)
 allecos<-gtools::smartbind(lake, stream, wetland)
 
 ### CART analysis 
-# For each independent variable, the data is split at several split points. 
-#At each split point, the "error" between the predicted value and the actual values is squared to get a "Sum of Squared Errors (SSE)". 
-# the variable/point yielding the lowest SSE is chosen as the root node/split point. This process is recursively continued.
 
 ##### TP ########################
 hist(allecos$TP)
 allecos$logTP <- log(1+allecos$TP)
-hist(allecos$logTP) #normal 
+hist(allecos$logTP) 
 
 fitall<-rpart(logTP ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
                 TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
@@ -42,8 +41,7 @@ fitall<-rpart(logTP ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_AR
 # Prune based on 1SE rule  (xerror + xstd of the minimum and then pruning at the row with xerror just below that)
 plotcp(fitall, main="TP pruning") #chose the CP value that is furthest left under the line (1SE above the min error)
 printcp(fitall) #shows a table of CP values and xerror/xstd
-SE<-min(fitall$cptable[,4]) + min(fitall$cptable[,5])  #(xerror + xstd of the minimum)
-SE2<-min(fitall$cptable[,4]) + min(fitall$cptable[,5])
+SE<-min(fitall$cptable[,4]) + fitall$cptable[which.min(fitall$cptable[,4]),"xstd"]  #(xerror + xstd of the minimum)
 fitall$cptable[,4] > SE
 cp<-fitall$cptable[7,"CP"]
 fitall1<-prune(fitall, cp=cp)  #use the CP value from the row where pruning should occur
@@ -75,17 +73,18 @@ p<-ggplot(data = usa) +
 
 #terminal map a
 datasub<-filter(TPdata, newclass== '1' | newclass== '2' | newclass== '3'| newclass== '4')
-tp1<-p+ geom_point(data=datasub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
-  scale_shape_manual(values=c(1, 16, 1, 16),  name = "Class")+
+
+p+ geom_point(data=datasub, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=newclass)) + 
+  scale_shape_manual(values=c(1, 16, 16, 1),  name = "Class")+
   scale_colour_brewer(palette = 'Paired', name = "Class") +
   north(data = usa, symbol=3, scale=.1, location = "bottomright") + 
   theme_bw() + xlab("Longitude") + ylab("Latitude") + 
   theme(legend.position = c(0.9, 0.4), legend.text = element_text(size=10) )
-                                                                  
+                                                         
 
 #Terminal map b
 #read in shapefile for the ecoregion split
-eco4<-readOGR("C:/Users/FWL/Desktop/Katelyn's Files/Eco9exports", layer="ecoregion")
+eco4<-readOGR("Data/NPL_TPL_SPL_CPL", layer="ecoregion")
 #new projection to lat long 
 prj<-CRS("+proj=longlat +datum=NAD83")
 eco4.ll<-spTransform(eco4, prj)
@@ -119,7 +118,7 @@ text(7, 5.5, labels='f', col='black')
 ######## TN ######### 
 hist(allecos$TN)
 allecos$logTN <- log(1+allecos$TN)
-hist(allecos$logTN) #normal 
+hist(allecos$logTN) 
 TNall<-rpart(logTN ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
                TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
                WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
@@ -187,7 +186,7 @@ text(8, 7, labels='g', col='black')
 ############ CHLA #####################
 hist(allecos$CHLA) 
 allecos$logCHLA <- log(1+allecos$CHLA)
-hist(allecos$logCHLA) # sort of normal 
+hist(allecos$logCHLA) 
 CHLAall<-rpart(logCHLA ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + WS_AREA + Type + DEPTH + POPDEN + ROADDEN + NDEP + 
                  TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
                  WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
@@ -257,7 +256,7 @@ text(8, 3.1, labels='f', col='black')
 ################# AQM  ##############
 hist(allecos$aqveg)
 allecos$logaqveg <- log(1+allecos$aqveg)
-hist(allecos$logaqveg) #sort of normal 
+hist(allecos$logaqveg) 
 AQMall<-rpart(logaqveg ~ Rveg + ELEVMAX + ELEVMIN + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
                 TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
                 WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83,
@@ -302,7 +301,7 @@ p+ geom_point(data=aqm1, aes(x = LON_DD83, y = LAT_DD83, colour=newclass, shape=
 
 #plot map B
 #read in shapefile for ecoregion split
-eco3<-readOGR("C:/Users/FWL/Desktop/Katelyn's Files/Eco9exports", layer="NPLTPLUMW")
+eco3<-readOGR("Data/NPL_UMW_TPL", layer="NPLTPLUMW")
 #new projection to lat long 
 eco3.ll<-spTransform(eco3, prj)
 plot(eco3.ll)
@@ -390,7 +389,7 @@ out<-LSD.test(MMIdata$MMI,MMIdata$newclass, 3399, 323, alpha=0.05)
 boxplot(MMI~newclass,
         data=MMIdata,
         xlab="class", 
-        ylab="MMI", col=brewer.pal(9,'Paired'))
+        ylab="Biotic Complexity", col=brewer.pal(9,'Paired'))
 text(1, 17, labels='a', col='black')
 text(2, 23, labels='b', col='black')
 text(3, 35, labels='c', col='black')
@@ -406,9 +405,7 @@ back_transform<-function (x) {(2.718281^(x))-1}
 #### MAP Figures #### 
 
 #Fig 1 A
-library(rgdal)
-library(tmap)
-eco9<- readOGR(dsn = "/Users/katelynking/Desktop/Aggregate_ecoregion9", layer = "Export_Output")
+eco9<- readOGR(dsn = "Data/Ecoregion9", layer = "Export_Output")
 
 #using TMAP package
 tm_shape(eco9)+
@@ -441,5 +438,5 @@ theme(panel.grid.major = element_blank(),
       axis.ticks.y = element_blank(),
       axis.text.y = element_blank(),
       panel.background = element_rect(colour = "black", size=1, fill=NA)) +
-  theme(legend.position = c(.07, 0.2), legend.text = element_text(size=10) ) +
-  theme(legend.text=element_text(size=12) ) 
+  theme(legend.position = c(.08, 0.2), legend.text = element_text(size=12) ) +
+  theme(legend.text=element_text(size=10) ) 

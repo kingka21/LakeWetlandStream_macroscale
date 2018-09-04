@@ -38,7 +38,7 @@ NLA_Rveg$RVEG<-rowMeans(subset(NLA_Rveg, select = c(RVFCCANBIG_RIP, RVFCCANSMALL
                                                     RVFCGNDWOODY_RIP, RVFCUNDNONW_RIP, RVFCUNDWOODY_RIP)), na.rm = TRUE)
 NLA_Rveg$RVEG_pct<-NLA_Rveg$RVEG*100 #convert from proportion to a %
 
-#was requested to be put on the website; elevation (cm), NADP (kg/ha), Popden (people/sqmi), roadden (km/sqkm), LULC (%), 
+#from EPA personnel, requested to be put on the website; elevation (cm), NADP (kg/ha), Popden (people/sqmi), roadden (km/sqkm), LULC (%), 
 landscape<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/NLA2012_wide_landscape.csv")
 NLA_landscape<-dplyr::select(landscape, SITE_ID, ELEVMAX_BSN, ELEVMEAN_BSN, ELEVMIN_BSN, NADP_TOTALN_BSN, NLCD2006_AGRICPCT_BSN,
            NLCD2006_DEVELOPEDPCT_BSN, NLCD2006_FORESTPCT_BSN, NLCD2006_WETLANDPCT_BSN, NLCD2006_71PCT_BSN,
@@ -49,7 +49,7 @@ NLA_landscape$ELEVMEAN_m<-NLA_landscape$ELEVMEAN_BSN/100  #convert cm to m
 NLA_landscape$ELEVMIN_m<-NLA_landscape$ELEVMIN_BSN/100  #convert cm to m 
 NLA_landscape$SHRUB_GRASS_PCT<-NLA_landscape$NLCD2006_71PCT_BSN + NLA_landscape$NLCD2006_52PCT_BSN #add up 52 shrub/scub + 71 grassland to equal one parameter
 
-#data from Emi to get watershed size (sqkm)
+#data from EPA personnel to get watershed size (sqkm)
 watershed<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/NLA2012_basins_LULC2011.csv")
 NLA_watershed<-dplyr::select(watershed, SITE_ID, BASINAreaSqKM)
 

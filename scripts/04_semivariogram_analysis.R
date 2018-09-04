@@ -1,4 +1,4 @@
-#Variogram analysis 
+##Written by: Katelyn King
 ##Start Date: Oct 24, 2017 
 
 #load libraries 
@@ -45,7 +45,7 @@ stream$logaqveg<-log(1+stream$aqveg)
 hist(wetland$TP)
 hist(wetland$TN)
 hist(wetland$CHLA)
-hist(wetland$aqveg) #not great 
+hist(wetland$aqveg) 
 hist(wetland$MMI) #normal 
 
 #log transform variables new columns 

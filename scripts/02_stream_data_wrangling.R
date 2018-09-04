@@ -12,7 +12,7 @@ NRSAbent<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Dat
 NRSAveg<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/phabmed.csv")
 NRSAland<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/land.csv")
 
-#This file is not on the website but was given to me by XX? CHLA (ug/L) from the water column
+#This file is not on the website but was given to me by EPA personnel. CHLA (ug/L) from the water column
 NRSAchla<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/wchla.csv")
 NRSA_chla<-dplyr::filter(NRSAchla, SAMPLE_CAT == "P") #primary sample
 NRSA_chla<-dplyr::filter(NRSA_chla, SAM_CODE == "REGULAR") #regular sample
@@ -31,7 +31,7 @@ NRSA_veg<-dplyr::select(NRSAveg, UID, XCMG, XDEPTH_CM, XFC_AQM)
 #MMI (no units)
 NRSA_bent<-dplyr::select(NRSAbent, UID, MMI_BENT)
 
-#select land use/cover variables ELEV (m),  Pop Den (sqkm), RDDEN (km/sqkm), LULC (%), WAT_AREA (sqkm), Total N (kg/ha)
+#select land use/cover variables ELEV (m),  Pop Den (sqkm), RDDEN (km/sqkm), LULC (%), WAT_AREA (sqkm), Total N Dep (kg/ha)
 NRSA_land<-dplyr::select(NRSAland, UID, NHDWAT_NEDELEV_MAX, NHDWAT_ELEV, NHDWAT_NEDELEV_MIN,
                          NHDWAT_POPDENKM, RDDEN, PCT_AG, PCT_URB,
                          PCT_FOR, PCT_WET, PCT_SHRUB_GRASS, NHDWAT_AREA_SQKM, NHDWAT_NADP2009_MEAN_TOTALN)

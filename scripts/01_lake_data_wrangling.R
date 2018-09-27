@@ -5,13 +5,13 @@
 ### load libraries #### 
 library(dplyr)
 
-#### National Lake Assessment 2012 files available from website 
-#import csv files into R to get variables 
-NLA2012chem<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/nla2012_waterchem_wide.csv")  #TP and TN
-NLA2012info<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/nla2012_wide_siteinfo_08232016.csv")
-NLA2012mmi.chla<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/nla12_keyvariables_data.csv") #chla, benthic MMI
-NLA2012aqveg<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/nla2012_wide_phabmet_10202016.csv") #aquatic vegitation % covers 
-NLA2012rveg<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/nla2012_wide_phabmet_10202016.csv")
+#### National Lake Assessment 2012 files available from website: https://www.epa.gov/national-aquatic-resource-surveys/
+#import csv files into R to get variables, set your own working directory 
+NLA2012chem<-read.csv("/nla2012_waterchem_wide.csv")  #TP and TN
+NLA2012info<-read.csv("/nla2012_wide_siteinfo_08232016.csv") #site information
+NLA2012mmi.chla<-read.csv("/nla12_keyvariables_data.csv") #chla, benthic MMI
+NLA2012aqveg<-read.csv("/nla2012_wide_phabmet_10202016.csv") #aquatic vegetation % covers 
+NLA2012rveg<-read.csv("/nla2012_wide_phabmet_10202016.csv") #riparian vegetation 
 
 # select out lakes that were sampled, both probability lakes and reference lakes
 nla2012chem_info_join<-full_join(NLA2012info, NLA2012chem, by=("UID"))
@@ -31,15 +31,15 @@ NLA_MMI<-dplyr::select(NLA2012mmi.chla, UID, INDEX_SITE_DEPTH, MMI_BENT_NLA12, C
 NLA_AQM<-dplyr::select(NLA2012aqveg, UID, AMFCALL)
 NLA_AQM$aqveg<-NLA_AQM$AMFCALL*100 #convert from proportion to %
 
-# make % riparian vegitation coverage: select canopy, ground and understory layers then average across columns
+# make % riparian vegetation coverage: select canopy, ground and understory layers then average across columns
 NLA_Rveg<- dplyr::select(NLA2012rveg, UID, RVFCCANBIG_RIP, RVFCCANSMALL_RIP, RVFCGNDNONW_RIP, 
                      RVFCGNDWOODY_RIP, RVFCUNDNONW_RIP, RVFCUNDWOODY_RIP)
 NLA_Rveg$RVEG<-rowMeans(subset(NLA_Rveg, select = c(RVFCCANBIG_RIP, RVFCCANSMALL_RIP, RVFCGNDNONW_RIP, 
                                                     RVFCGNDWOODY_RIP, RVFCUNDNONW_RIP, RVFCUNDWOODY_RIP)), na.rm = TRUE)
 NLA_Rveg$RVEG_pct<-NLA_Rveg$RVEG*100 #convert from proportion to a %
 
-#from EPA personnel, requested to be put on the website; elevation (cm), NADP (kg/ha), Popden (people/sqmi), roadden (km/sqkm), LULC (%), 
-landscape<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/NLA2012_wide_landscape.csv")
+#data from EPA personnel, requested to be put on the NARS website; elevation (cm), NADP (kg/ha), Popden (people/sqmi), roadden (km/sqkm), LULC (%), 
+landscape<-read.csv("/NLA2012_wide_landscape.csv")
 NLA_landscape<-dplyr::select(landscape, SITE_ID, ELEVMAX_BSN, ELEVMEAN_BSN, ELEVMIN_BSN, NADP_TOTALN_BSN, NLCD2006_AGRICPCT_BSN,
            NLCD2006_DEVELOPEDPCT_BSN, NLCD2006_FORESTPCT_BSN, NLCD2006_WETLANDPCT_BSN, NLCD2006_71PCT_BSN,
            NLCD2006_52PCT_BSN, POPDEN_BSN, ROADDEN_BSN)
@@ -50,7 +50,7 @@ NLA_landscape$ELEVMIN_m<-NLA_landscape$ELEVMIN_BSN/100  #convert cm to m
 NLA_landscape$SHRUB_GRASS_PCT<-NLA_landscape$NLCD2006_71PCT_BSN + NLA_landscape$NLCD2006_52PCT_BSN #add up 52 shrub/scub + 71 grassland to equal one parameter
 
 #data from EPA personnel to get watershed size (sqkm)
-watershed<-read.csv("/Users/katelynking/Desktop/MSU Research/nla2012 raw data/NLA2012_basins_LULC2011.csv")
+watershed<-read.csv("/NLA2012_basins.csv")
 NLA_watershed<-dplyr::select(watershed, SITE_ID, BASINAreaSqKM)
 
 #join all datasets
@@ -73,10 +73,10 @@ library(gstat)
 install.packages('prism')
 library(prism)
 
-# create a raster of the desired data, you have to enter the entire path 
-precip<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
-tmax<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmax_30yr_normal_800mM2_annual_bil/PRISM_tmax_30yr_normal_800mM2_annual_bil.bil")
-tmin<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmin_30yr_normal_800mM2_annual_bil/PRISM_tmin_30yr_normal_800mM2_annual_bil.bil")
+# create a raster of the desired data available from PRISM 
+precip<-raster("/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
+tmax<-raster("/PRISM/PRISM_tmax_30yr_normal_800mM2_annual_bil/PRISM_tmax_30yr_normal_800mM2_annual_bil.bil")
+tmin<-raster("/PRISM/PRISM_tmin_30yr_normal_800mM2_annual_bil/PRISM_tmin_30yr_normal_800mM2_annual_bil.bil")
 crs(precip)
 
 #project to NAD 83 
@@ -90,29 +90,29 @@ lake.ll$tmin<-raster::extract(tmin, lake.ll, na.rm=T)
 head(lake.ll@data)    ## Check data structure
 
 #lake summer temp 2012
-t.12.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_201205_bil/PRISM_tmean_stable_4kmM2_201205_bil.bil")
-t.12.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_201206_bil/PRISM_tmean_stable_4kmM2_201206_bil.bil")
-t.12.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_201207_bil/PRISM_tmean_stable_4kmM2_201207_bil.bil")
-t.12.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_201208_bil/PRISM_tmean_stable_4kmM2_201208_bil.bil")
-t.12.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_201209_bil/PRISM_tmean_stable_4kmM2_201209_bil.bil")
+t.12.may<-raster("/PRISM/PRISM_tmean_stable_4kmM2_201205_bil/PRISM_tmean_stable_4kmM2_201205_bil.bil")
+t.12.jun<-raster("/PRISM/PRISM_tmean_stable_4kmM2_201206_bil/PRISM_tmean_stable_4kmM2_201206_bil.bil")
+t.12.jul<-raster("/PRISM/PRISM_tmean_stable_4kmM2_201207_bil/PRISM_tmean_stable_4kmM2_201207_bil.bil")
+t.12.aug<-raster("/PRISM/PRISM_tmean_stable_4kmM2_201208_bil/PRISM_tmean_stable_4kmM2_201208_bil.bil")
+t.12.sep<-raster("/PRISM/PRISM_tmean_stable_4kmM2_201209_bil/PRISM_tmean_stable_4kmM2_201209_bil.bil")
 t.summer.2012=stack(c(t.12.may, t.12.jun,t.12.jul,t.12.aug, t.12.sep))
 t.mean.summer.12=mean(t.summer.2012)
 lake.ll$Tsummer<-raster::extract(t.mean.summer.12, lake.ll, na.rm=T)
 
 #lake summer precip 2012
-p.12.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201205_bil/PRISM_ppt_stable_4kmM3_201205_bil.bil")
-p.12.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201206_bil/PRISM_ppt_stable_4kmM3_201206_bil.bil")
-p.12.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201207_bil/PRISM_ppt_stable_4kmM3_201207_bil.bil")
-p.12.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201208_bil/PRISM_ppt_stable_4kmM3_201208_bil.bil")
-p.12.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201209_bil/PRISM_ppt_stable_4kmM3_201209_bil.bil")
+p.12.may<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201205_bil/PRISM_ppt_stable_4kmM3_201205_bil.bil")
+p.12.jun<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201206_bil/PRISM_ppt_stable_4kmM3_201206_bil.bil")
+p.12.jul<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201207_bil/PRISM_ppt_stable_4kmM3_201207_bil.bil")
+p.12.aug<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201208_bil/PRISM_ppt_stable_4kmM3_201208_bil.bil")
+p.12.sep<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201209_bil/PRISM_ppt_stable_4kmM3_201209_bil.bil")
 p.summer.2012=stack(c(p.12.may, p.12.jun,p.12.jul,p.12.aug, p.12.sep))
 p.mean.summer.12=mean(p.summer.2012)
 lake.ll$PrecipSummer<-raster::extract(p.mean.summer.12, lake.ll, na.rm=T)
 
 #NLA winter precipitation dec 2011, jan/feb2012
-p.11.dec<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201112_bil/PRISM_ppt_stable_4kmM3_201112_bil.bil")
-p.12.jan<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201201_bil/PRISM_ppt_stable_4kmM3_201201_bil.bil")
-p.12.feb<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201202_bil/PRISM_ppt_stable_4kmM3_201202_bil.bil")
+p.11.dec<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201112_bil/PRISM_ppt_stable_4kmM3_201112_bil.bil")
+p.12.jan<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201201_bil/PRISM_ppt_stable_4kmM3_201201_bil.bil")
+p.12.feb<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201202_bil/PRISM_ppt_stable_4kmM3_201202_bil.bil")
 p.winter.2012=stack(c(p.11.dec, p.12.jan,p.12.feb))
 p.mean.winter.12=mean(p.winter.2012)
 lake.ll$PrecipWinter<-raster::extract(p.mean.winter.12, lake.ll, na.rm=T)

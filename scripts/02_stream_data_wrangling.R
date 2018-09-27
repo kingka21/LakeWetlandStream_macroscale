@@ -4,16 +4,16 @@
 ### load libraries #### 
 library(dplyr)
 
-#### National Rivers and Streams Assessment 2008-2009 files available from website 
-#import csv files into R to get variables
-NRSAchem<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/chem.csv")
-NRSAinfo<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/siteinfo_0.csv")
-NRSAbent<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/bentcond.csv")
-NRSAveg<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/phabmed.csv")
-NRSAland<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/land.csv")
+#### National Rivers and Streams Assessment 2008-2009 files available from website: https://www.epa.gov/national-aquatic-resource-surveys/
+#import csv files into R to get variables, set your own working directory 
+NRSAchem<-read.csv("/Streams 2008 Raw Data/chem.csv")
+NRSAinfo<-read.csv("/Streams 2008 Raw Data/siteinfo_0.csv")
+NRSAbent<-read.csv("/Streams 2008 Raw Data/bentcond.csv")
+NRSAveg<-read.csv("/Streams 2008 Raw Data/phabmed.csv")
+NRSAland<-read.csv("/Streams 2008 Raw Data/land.csv")
 
-#This file is not on the website but was given to me by EPA personnel. CHLA (ug/L) from the water column
-NRSAchla<-read.csv("/Users/katelynking/Desktop/MSU Research/Streams 2008 Raw Data/wchla.csv")
+#data from EPA personnel. CHLA (ug/L) from the water column
+NRSAchla<-read.csv("/Streams 2008 Raw Data/wchla.csv")
 NRSA_chla<-dplyr::filter(NRSAchla, SAMPLE_CAT == "P") #primary sample
 NRSA_chla<-dplyr::filter(NRSA_chla, SAM_CODE == "REGULAR") #regular sample
 NRSA_chla<-dplyr::select(NRSA_chla, UID, CHLA)
@@ -67,9 +67,9 @@ library(lubridate)
 library(gtools)
 
 # create a raster of the desired data, you have to enter the entire path 
-precip<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
-tmax<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmax_30yr_normal_800mM2_annual_bil/PRISM_tmax_30yr_normal_800mM2_annual_bil.bil")
-tmin<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmin_30yr_normal_800mM2_annual_bil/PRISM_tmin_30yr_normal_800mM2_annual_bil.bil")
+precip<-raster("/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
+tmax<-raster("/PRISM/PRISM_tmax_30yr_normal_800mM2_annual_bil/PRISM_tmax_30yr_normal_800mM2_annual_bil.bil")
+tmin<-raster("/PRISM/PRISM_tmin_30yr_normal_800mM2_annual_bil/PRISM_tmin_30yr_normal_800mM2_annual_bil.bil")
 crs(precip)
 
 #project to NAD 83 
@@ -82,16 +82,16 @@ stream.ll$tmax<-raster::extract(tmax, stream.ll, na.rm=T)
 stream.ll$tmin<-raster::extract(tmin, stream.ll, na.rm=T)
 
 #stream summer temp for 08-09
-t.08.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200805_bil/PRISM_tmean_stable_4kmM2_200805_bil.bil")
-t.08.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200806_bil/PRISM_tmean_stable_4kmM2_200806_bil.bil")
-t.08.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200807_bil/PRISM_tmean_stable_4kmM2_200807_bil.bil")
-t.08.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200808_bil/PRISM_tmean_stable_4kmM2_200808_bil.bil")
-t.08.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200809_bil/PRISM_tmean_stable_4kmM2_200809_bil.bil")
-t.09.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200905_bil/PRISM_tmean_stable_4kmM2_200905_bil.bil")
-t.09.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200906_bil/PRISM_tmean_stable_4kmM2_200906_bil.bil")
-t.09.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200907_bil/PRISM_tmean_stable_4kmM2_200907_bil.bil")
-t.09.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200908_bil/PRISM_tmean_stable_4kmM2_200908_bil.bil")
-t.09.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmean_stable_4kmM2_200909_bil/PRISM_tmean_stable_4kmM2_200909_bil.bil")
+t.08.may<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200805_bil/PRISM_tmean_stable_4kmM2_200805_bil.bil")
+t.08.jun<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200806_bil/PRISM_tmean_stable_4kmM2_200806_bil.bil")
+t.08.jul<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200807_bil/PRISM_tmean_stable_4kmM2_200807_bil.bil")
+t.08.aug<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200808_bil/PRISM_tmean_stable_4kmM2_200808_bil.bil")
+t.08.sep<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200809_bil/PRISM_tmean_stable_4kmM2_200809_bil.bil")
+t.09.may<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200905_bil/PRISM_tmean_stable_4kmM2_200905_bil.bil")
+t.09.jun<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200906_bil/PRISM_tmean_stable_4kmM2_200906_bil.bil")
+t.09.jul<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200907_bil/PRISM_tmean_stable_4kmM2_200907_bil.bil")
+t.09.aug<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200908_bil/PRISM_tmean_stable_4kmM2_200908_bil.bil")
+t.09.sep<-raster("/PRISM/PRISM_tmean_stable_4kmM2_200909_bil/PRISM_tmean_stable_4kmM2_200909_bil.bil")
 #Average the temps for summer months into a single raster
 t.summer.2008=stack(c(t.08.may, t.08.jun,t.08.jul,t.08.aug, t.08.sep))
 t.mean.summer.08=mean(t.summer.2008)
@@ -101,16 +101,16 @@ stream.ll$Tsummer.08<-raster::extract(t.mean.summer.08, stream.ll, na.rm=T)
 stream.ll$Tsummer.09<-raster::extract(t.mean.summer.09, stream.ll, na.rm=T)
 
 #streams summer precipitation for 08-09
-p.08.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200805_bil/PRISM_ppt_stable_4kmM3_200805_bil.bil")
-p.08.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200806_bil/PRISM_ppt_stable_4kmM3_200806_bil.bil")
-p.08.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200807_bil/PRISM_ppt_stable_4kmM3_200807_bil.bil")
-p.08.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200808_bil/PRISM_ppt_stable_4kmM3_200808_bil.bil")
-p.08.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200809_bil/PRISM_ppt_stable_4kmM3_200809_bil.bil")
-p.09.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200905_bil/PRISM_ppt_stable_4kmM3_200905_bil.bil")
-p.09.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200906_bil/PRISM_ppt_stable_4kmM3_200906_bil.bil")
-p.09.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200907_bil/PRISM_ppt_stable_4kmM3_200907_bil.bil")
-p.09.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200908_bil/PRISM_ppt_stable_4kmM3_200908_bil.bil")
-p.09.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200909_bil/PRISM_ppt_stable_4kmM3_200909_bil.bil")
+p.08.may<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200805_bil/PRISM_ppt_stable_4kmM3_200805_bil.bil")
+p.08.jun<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200806_bil/PRISM_ppt_stable_4kmM3_200806_bil.bil")
+p.08.jul<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200807_bil/PRISM_ppt_stable_4kmM3_200807_bil.bil")
+p.08.aug<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200808_bil/PRISM_ppt_stable_4kmM3_200808_bil.bil")
+p.08.sep<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200809_bil/PRISM_ppt_stable_4kmM3_200809_bil.bil")
+p.09.may<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200905_bil/PRISM_ppt_stable_4kmM3_200905_bil.bil")
+p.09.jun<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200906_bil/PRISM_ppt_stable_4kmM3_200906_bil.bil")
+p.09.jul<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200907_bil/PRISM_ppt_stable_4kmM3_200907_bil.bil")
+p.09.aug<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200908_bil/PRISM_ppt_stable_4kmM3_200908_bil.bil")
+p.09.sep<-raster(" /PRISM/PRISM_ppt_stable_4kmM3_200909_bil/PRISM_ppt_stable_4kmM3_200909_bil.bil")
 #Average the precip for summer months into a single raster
 p.summer.2008=stack(c(p.08.may, p.08.jun,p.08.jul,p.08.aug, p.08.sep))
 p.mean.summer.08=mean(p.summer.2008)
@@ -120,12 +120,12 @@ stream.ll$PrecipSummer.08<-raster::extract(p.mean.summer.08, stream.ll, na.rm=T)
 stream.ll$PrecipSummer.09<-raster::extract(p.mean.summer.09, stream.ll, na.rm=T)
 
 #streams winter precip for dec07, jan08, feb08 and dec 08, jan09, feb09 
-p.07.dec<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200712_bil/PRISM_ppt_stable_4kmM3_200712_bil.bil")
-p.08.jan<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200801_bil/PRISM_ppt_stable_4kmM3_200801_bil.bil")
-p.08.feb<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200802_bil/PRISM_ppt_stable_4kmM3_200802_bil.bil")
-p.08.dec<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200812_bil/PRISM_ppt_stable_4kmM3_200812_bil.bil")
-p.09.jan<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200901_bil/PRISM_ppt_stable_4kmM3_200901_bil.bil")
-p.09.feb<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_200902_bil/PRISM_ppt_stable_4kmM3_200902_bil.bil")
+p.07.dec<-raster("/PRISM/PRISM_ppt_stable_4kmM3_200712_bil/PRISM_ppt_stable_4kmM3_200712_bil.bil")
+p.08.jan<-raster("/PRISM/PRISM_ppt_stable_4kmM3_200801_bil/PRISM_ppt_stable_4kmM3_200801_bil.bil")
+p.08.feb<-raster("/PRISM/PRISM_ppt_stable_4kmM3_200802_bil/PRISM_ppt_stable_4kmM3_200802_bil.bil")
+p.08.dec<-raster("/PRISM/PRISM_ppt_stable_4kmM3_200812_bil/PRISM_ppt_stable_4kmM3_200812_bil.bil")
+p.09.jan<-raster("/PRISM/PRISM_ppt_stable_4kmM3_200901_bil/PRISM_ppt_stable_4kmM3_200901_bil.bil")
+p.09.feb<-raster("/PRISM/PRISM_ppt_stable_4kmM3_200902_bil/PRISM_ppt_stable_4kmM3_200902_bil.bil")
 p.winter.2008=stack(c(p.07.dec, p.08.jan,p.08.feb))
 p.mean.winter.08=mean(p.winter.2008)
 p.winter.2009=stack(c(p.08.dec, p.09.jan,p.09.feb))

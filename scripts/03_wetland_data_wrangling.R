@@ -4,17 +4,17 @@
 ### load libraries #### 
 library(dplyr)
 
-#### National Wetlands Condition Assessment 2011 files available from website 
-#import csv files into R to get variables
-WLinfo<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_siteinfo.csv", header = TRUE)
-WLchem<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_waterchem.csv", header = TRUE)
-WLvmmi<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_cond_stress.csv", header = TRUE)
-WLchla<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_chla.csv", header = TRUE)
-WLsal<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_salinity.csv", header = TRUE)
-WLveg<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_vegtype_grndsurf.csv", header = TRUE)
-WLtree<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_tree.csv", header = TRUE)
-WLland<-read.csv( "/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_landscapechar.csv")
-WLdepth<-read.csv("/Users/katelynking/Desktop/MSU Research/Wetland2011_raw data/nwca2011_aawaterchar_edited.csv")
+#### National Wetlands Condition Assessment 2011 files available from website: https://www.epa.gov/national-aquatic-resource-surveys/
+#import csv files into R to get variables, set your own working directory 
+WLinfo<-read.csv("/Wetland2011_raw data/nwca2011_siteinfo.csv", header = TRUE)
+WLchem<-read.csv("/Wetland2011_raw data/nwca2011_waterchem.csv", header = TRUE)
+WLvmmi<-read.csv("/Wetland2011_raw data/nwca2011_cond_stress.csv", header = TRUE)
+WLchla<-read.csv("/Wetland2011_raw data/nwca2011_chla.csv", header = TRUE)
+WLsal<-read.csv("/Wetland2011_raw data/nwca2011_salinity.csv", header = TRUE)
+WLveg<-read.csv("/Wetland2011_raw data/nwca2011_vegtype_grndsurf.csv", header = TRUE)
+WLtree<-read.csv("/Wetland2011_raw data/nwca2011_tree.csv", header = TRUE)
+WLland<-read.csv( "/Wetland2011_raw data/nwca2011_landscapechar.csv")
+WLdepth<-read.csv("/Wetland2011_raw data/nwca2011_aawaterchar_edited.csv")
 
 #select needed files 
 WL_info<-dplyr::select(WLinfo, UID, SITE_ID, SITE_USE, AA_CENTER_LAT, AA_CENTER_LON, DATE_COL, AGGR_ECO9_2015 )
@@ -72,7 +72,7 @@ WLdata2<- left_join(WLveg_mean, WLtree_mean, by='UID')
 WLdata2$Rveg<-rowMeans(subset(WLdata2, select = c(mean_VTALL_VEG, mean_TALL_VEG, mean_HMED_VEG, mean_MED_VEG, 
                                                   mean_SMALL_VEG, mean_VSMALL_VEG, mean_TREE)), na.rm = TRUE)
 
-#join vegitation with other variables 
+#join vegetation with other variables 
 NWCA2011_data<-left_join(WL_data, WLdata2, by=("UID"))
 
 NWCA2011_data$Type<- 'Wetland'
@@ -89,9 +89,9 @@ library(lubridate)
 library(gtools)
 
 # create a raster of the desired data, you have to enter the entire path 
-precip<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
-tmax<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmax_30yr_normal_800mM2_annual_bil/PRISM_tmax_30yr_normal_800mM2_annual_bil.bil")
-tmin<-raster("/Users/katelynking/Desktop/PRISM/PRISM_tmin_30yr_normal_800mM2_annual_bil/PRISM_tmin_30yr_normal_800mM2_annual_bil.bil")
+precip<-raster("/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
+tmax<-raster("/PRISM/PRISM_tmax_30yr_normal_800mM2_annual_bil/PRISM_tmax_30yr_normal_800mM2_annual_bil.bil")
+tmin<-raster("/PRISM/PRISM_tmin_30yr_normal_800mM2_annual_bil/PRISM_tmin_30yr_normal_800mM2_annual_bil.bil")
 crs(precip)
 
 #project to NAD 83 
@@ -104,19 +104,19 @@ wetland.ll$tmax<-raster::extract(tmax, wetland.ll, na.rm=T)
 wetland.ll$tmin<-raster::extract(tmin, wetland.ll, na.rm=T)
 
 #wetlands winter precipitation dec2010, jan/feb2011
-p.10.dec<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201012_bil/PRISM_ppt_stable_4kmM3_201012_bil.bil")
-p.11.jan<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201101_bil/PRISM_ppt_stable_4kmM3_201101_bil.bil")
-p.11.feb<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201102_bil/PRISM_ppt_stable_4kmM3_201102_bil.bil")
+p.10.dec<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201012_bil/PRISM_ppt_stable_4kmM3_201012_bil.bil")
+p.11.jan<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201101_bil/PRISM_ppt_stable_4kmM3_201101_bil.bil")
+p.11.feb<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201102_bil/PRISM_ppt_stable_4kmM3_201102_bil.bil")
 p.winter.2011=stack(c(p.10.dec, p.11.jan,p.11.feb))
 p.mean.winter.11=mean(p.winter.2011)
 wetland.ll$PrecipWinter<-raster::extract(p.mean.winter.11, wetland.ll, na.rm=T)
 
 ### wetlands summer precip 
-p.11.may<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201105_bil/PRISM_ppt_stable_4kmM3_201105_bil.bil")
-p.11.jun<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201106_bil/PRISM_ppt_stable_4kmM3_201106_bil.bil")
-p.11.jul<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201107_bil/PRISM_ppt_stable_4kmM3_201107_bil.bil")
-p.11.aug<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201108_bil/PRISM_ppt_stable_4kmM3_201108_bil.bil")
-p.11.sep<-raster("/Users/katelynking/Desktop/PRISM/PRISM_ppt_stable_4kmM3_201109_bil/PRISM_ppt_stable_4kmM3_201109_bil.bil")
+p.11.may<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201105_bil/PRISM_ppt_stable_4kmM3_201105_bil.bil")
+p.11.jun<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201106_bil/PRISM_ppt_stable_4kmM3_201106_bil.bil")
+p.11.jul<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201107_bil/PRISM_ppt_stable_4kmM3_201107_bil.bil")
+p.11.aug<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201108_bil/PRISM_ppt_stable_4kmM3_201108_bil.bil")
+p.11.sep<-raster("/PRISM/PRISM_ppt_stable_4kmM3_201109_bil/PRISM_ppt_stable_4kmM3_201109_bil.bil")
 p.summer.2011=stack(c(p.11.may, p.11.jun,p.11.jul,p.11.aug, p.11.sep))
 p.mean.summer.11=mean(p.summer.2011)
 wetland.ll$PrecipSummer<-raster::extract(p.mean.summer.11, wetland.ll, na.rm=T)

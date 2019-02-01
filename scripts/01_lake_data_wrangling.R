@@ -69,9 +69,6 @@ NLA2012_data$Type<- 'Lake'
 library(sp)
 library(raster)
 library(rgdal)
-library(gstat)
-install.packages('prism')
-library(prism)
 
 # create a raster of the desired data available from PRISM 
 precip<-raster("/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")

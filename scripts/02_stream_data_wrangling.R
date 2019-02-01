@@ -61,8 +61,6 @@ NRSA0809_data$Type<- 'Stream'
 library(sp)
 library(raster)
 library(rgdal)
-library(gstat)
-library(prism)
 library(lubridate)
 library(gtools)
 

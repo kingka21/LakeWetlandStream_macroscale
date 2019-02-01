@@ -83,10 +83,6 @@ NWCA2011_data$WS_AREA<- 3.14   # 1,000m buffer area 1,000*1,000*3.14 = 3,140,000
 library(sp)
 library(raster)
 library(rgdal)
-library(gstat)
-library(prism)
-library(lubridate)
-library(gtools)
 
 # create a raster of the desired data, you have to enter the entire path 
 precip<-raster("/PRISM/PRISM_ppt_30yr_normal_800mM2_annual_bil/PRISM_ppt_30yr_normal_800mM2_annual_bil.bil")
@@ -140,7 +136,7 @@ wetland<- wetland %>% dplyr::rename (LAT_DD83=AA_CENTER_LAT, LON_DD83=AA_CENTER_
                          PrecipNorm=meanprecip, TMAX=tmax, TMIN=tmin, Tsummer=TIP_PT)
 
 summary(wetland)
-describe(wetland)
+Hmisc::describe(wetland)
 
 write.csv(wetland, "Data/NWCA2011_data.csv", row.names = FALSE)
 

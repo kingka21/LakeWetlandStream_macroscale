@@ -2,6 +2,10 @@
 
 #Figure 1 a
 library(mapdata)
+library(ggplot2)
+library(ggsn)
+library(dplyr)
+
 usa<-map_data("usa")  #pull out the usa map
 p<-ggplot(data = usa) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -14,7 +18,7 @@ points$Type<-ordered(points$Type, levels=c("Lake", "Wetland", "Stream"))
 Fig1a<-p+geom_point(data=points, size = 1, aes(x = LON_DD83, y = LAT_DD83, colour=Type, shape=Type)) + 
   scale_colour_manual(values = c("#3399CC", "#9966CC", "chartreuse4" ), name = "Freshwater Type") + 
   scale_shape_manual(values=c(0, 2, 1),  name = "Freshwater Type") +
-  north(data = usa, symbol=3, scale=.1, location = "bottomright") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomleft") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         axis.line.x = element_blank(), 
@@ -26,10 +30,10 @@ Fig1a<-p+geom_point(data=points, size = 1, aes(x = LON_DD83, y = LAT_DD83, colou
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank(),
         panel.background = element_rect(colour = "black", size=.5, fill=NA)) +
-  theme(legend.position = c(.1, 0.15), legend.text = element_text(size=9) ) +
+  theme(legend.position = c(0.88, 0.20), legend.text = element_text(size=9) ) +
   theme(legend.text=element_text(size=9) ) 
 
-cowplot::save_plot("Figure 1a.png", Fig1b, base_width = 7,
+cowplot::save_plot("Figure 1a.png", Fig1a, base_width = 7,
                    base_aspect_ratio = 1.1)
                   
 #Fig 1 B
@@ -39,15 +43,13 @@ eco9<- readOGR(dsn = "Data/Ecoregion9", layer = "Export_Output")
 prj.new <-CRS("+proj=longlat +datum=NAD83 +ellps=GRS80") 
 eco9.ll <- spTransform(eco9, prj.new)
 
-jpeg('Fig1b.jpeg', width = 6, height = 5, units = 'in', res = 600)
-
 #using TMAP package
-tm_shape(eco9.ll)+
+eco<-tm_shape(eco9.ll)+
   tm_fill('WSA9', title = 'Ecoregion') + 
-  tm_layout(legend.text.size = 1, legend.title.size=1.3) +
-  tm_compass(north = 0, type = 'arrow', position =c("right", "bottom"))
+  tm_layout(legend.text.size = .9, legend.title.size=1, legend.position = c("right", "bottom") ) +
+  tm_compass(north = 0, type = 'arrow', position =c("left", "bottom"))
 
-dev.off()
+save_tmap(eco, filename="Figure 1b.png", width = 7, asp=0)
 
 #Figure 5 - 4-panel map
 noNAs<-allecos[!(is.na(allecos$TP)),]

@@ -22,9 +22,9 @@ allecos<-gtools::smartbind(lake, stream, wetland)
 set.seed(8) #TRY DIFFERENT SEED SETS 188, 18, 999 top predictors don't change 
 ntreez <- 500
 noNAs<-allecos[!(is.na(allecos$TP)),] 
-RF_TP <- randomForest(log(TP+1) ~ Rveg + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
+RF_TP <- randomForest(log(TP+1) ~ Rveg + ELEVMEAN + Type + DEPTH + POPDEN + ROADDEN + NDEP + 
                         TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
-                        WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83, 
+                        WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015, 
                       data=noNAs, ntree=ntreez, importance=T, na.action=na.omit)
 RF_TP
 TP_imp <-randomForest::importance(RF_TP, type=1, scale=FALSE) #mean decrease in accuracy (also called permutation accuracy importance).
@@ -35,50 +35,40 @@ plot(RF_TP, xlim=c(0,600))
 #### TN ##### 
 set.seed(8) #TRY DIFFERENT SEED SETS 188, 18, 999, 8 
 noNAs<-allecos[!(is.na(allecos$TN)),] 
-RF_TN <- randomForest(log(TN+1) ~ Rveg + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
+RF_TN <- randomForest(log(TN+1) ~ Rveg + ELEVMEAN + Type + DEPTH + POPDEN + ROADDEN + NDEP + 
                         TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
-                        WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83, 
+                        WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015, 
                       data=noNAs, ntree=ntreez, importance=T, na.action=na.omit)
 RF_TN
 TN_imp <-randomForest::importance(RF_TN, type=1, scale=FALSE) #mean decrease in accuracy (also called permutation accuracy importance).
 
+# diagnostic for if I ran enough trees to reduce MSE  
+plot(RF_TN, xlim=c(0,600))
+
 #### ChlA ##### 
 set.seed(8) #TRY DIFFERENT SEED SETS 999, 188, 18, 8 
 noNAs<-allecos[!(is.na(allecos$CHLA)),] 
-RF_CHLA <- randomForest(log(CHLA+1) ~ Rveg + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
+RF_CHLA <- randomForest(log(CHLA+1) ~ Rveg + ELEVMEAN + Type + DEPTH + POPDEN + ROADDEN + NDEP + 
                         TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
-                        WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83, 
+                        WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015, 
                       data=noNAs, ntree=ntreez, importance=T, na.action=na.omit)
 RF_CHLA
-CHLA_imp <-randomForest::importance(RF_CHLA, type=1, scale=FALSE) #mean decrease in accuracy (also called permutation accuracy importance).
-imp<-as.data.frame(CHLA_imp) 
-imp$'Pred'   <-rownames(imp)
-io<-imp[order(imp$`%IncMSE`),]
-io$`Pred` <- factor(io$`Pred`, levels=io$`Pred`)  # convert to factor to retain sorted order in plot.
 
-CHL<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
-  geom_point(stat="identity", size=2) + 
-  coord_flip() + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
-                                          'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
-                                          'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
-                                          'plain', 'bold', 'bold', 'bold'))) +
-  ylab("mean decrease in accuracy") + 
-  theme(axis.title.y=element_blank())
-
-
-
+# diagnostic for if I ran enough trees to reduce MSE  
+plot(RF_CHLA, xlim=c(0,600))
 
 #### Aquatic Veg ##### 
 set.seed(8) #TRY DIFFERENT SEED SETS 999, 188, 18, 8 
 noNAs<-allecos[!(is.na(allecos$aqveg)),] 
-RF_aqveg <- randomForest(log(aqveg+1) ~ Rveg + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
+RF_aqveg <- randomForest(log(aqveg+1) ~ Rveg + ELEVMEAN + Type + DEPTH + POPDEN + ROADDEN + NDEP + 
                           TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
-                          WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83, 
+                          WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015, 
                         data=noNAs, ntree=ntreez, importance=T, na.action=na.omit)
 RF_aqveg
 veg_imp <-randomForest::importance(RF_aqveg, type=1, scale=FALSE) #mean decrease in accuracy (also called permutation accuracy importance).
 
+# diagnostic for if I ran enough trees to reduce MSE  
+plot(RF_aqveg, xlim=c(0,600))
 
 ### 4-PANEL PLOT ####
 
@@ -94,10 +84,10 @@ veg_imp <-randomForest::importance(RF_aqveg, type=1, scale=FALSE) #mean decrease
 TP<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
   coord_flip(ylim = c(0, 0.6)) + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
-                                          'bold', 'bold', 'bold',  'bold'))) +
+                                          'bold', 'bold', 'bold'))) +
   theme(axis.title.x=element_blank()) + 
   theme(axis.title.y=element_blank())
 
@@ -110,10 +100,10 @@ io$`Pred` <- factor(io$`Pred`, levels=io$`Pred`)  # convert to factor to retain 
 TN<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
   coord_flip(ylim = c(0, 0.6)) + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+  theme(axis.text.y=element_text(face = c( 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'bold', 
-                                          'bold', 'bold', 'bold',  'bold'))) +
+                                          'bold', 'bold', 'bold'))) +
   theme(axis.title.x=element_blank())  + 
   theme(axis.title.y=element_blank())
 
@@ -126,7 +116,7 @@ io$`Pred` <- factor(io$`Pred`, levels=io$`Pred`)  # convert to factor to retain 
 CHL<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
   coord_flip(ylim = c(0, 0.4)) + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
                                           'plain', 'bold', 'bold', 'bold'))) +
@@ -142,8 +132,8 @@ io$`Pred` <- factor(io$`Pred`, levels=io$`Pred`)  # convert to factor to retain 
 
 veg<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
-  coord_flip( ylim = c(0, 0.8)) + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+  coord_flip( ylim = c(0, 0.85)) + 
+  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
                                           'plain', 'plain', 'bold', 'bold'))) +
@@ -178,9 +168,9 @@ allecos_s$lnaqveg<-log(allecos_s$aqveg+1)
 
 
   set.seed(8)  # run with each variable 
-  RF <- randomForest(lnTN ~ Rveg + ELEVMEAN + Type + DEPTH + WS_AREA + POPDEN + ROADDEN + NDEP + 
+  RF <- randomForest(lnaqveg ~ Rveg + ELEVMEAN + Type + DEPTH + POPDEN + ROADDEN + NDEP + 
                              TMIN + TMAX + PrecipNorm + PrecipSummer + Tsummer + PrecipWinter + AG_PCT + FOREST_PCT +
-                             WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015 + LAT_DD83 + LON_DD83, 
+                             WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015, 
                            data=allecos_s, ntree=ntreez, importance=T, na.action=na.omit)
   print(RF)
   s_imp <-randomForest::importance(RF, type=1, scale=FALSE) 
@@ -198,7 +188,7 @@ allecos_s$lnaqveg<-log(allecos_s$aqveg+1)
 TP<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
     geom_point(stat="identity", size=2) + 
     coord_flip(ylim = c(0, 0.6)) + 
-    theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+    theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain',
                                             'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                             'plain', 'plain', 'plain', 'plain', 'plain', 'bold', 
                                             'bold', 'bold', 'bold',  'bold'))) +
@@ -209,10 +199,10 @@ TP<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) +
 TN<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
   coord_flip(ylim = c(0, 0.6)) + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'bold', 
-                                          'bold', 'bold', 'bold',  'bold'))) +
+                                          'bold', 'bold', 'bold'))) +
   theme(axis.title.x=element_blank())  + 
   theme(axis.title.y=element_blank())
 
@@ -220,7 +210,7 @@ TN<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) +
 CHL<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
   coord_flip() + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+  theme(axis.text.y=element_text(face = c( 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
                                           'plain', 'bold', 'bold', 'bold'))) +
@@ -232,7 +222,7 @@ CHL<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) +
 veg<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
     geom_point(stat="identity", size=2) + 
     coord_flip( ylim = c(0, 0.8)) + 
-    theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain', 'plain', 'plain',
+    theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain',
                                             'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                             'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
                                             'bold', 'bold', 'plain',  'bold'))) +

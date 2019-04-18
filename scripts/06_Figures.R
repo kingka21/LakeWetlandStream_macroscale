@@ -3,7 +3,7 @@
 #Figure 1 a
 library(mapdata)
 library(ggplot2)
-library(ggsn)
+library(ggsn) #add scale bar and north arrow 
 library(dplyr)
 
 usa<-map_data("usa")  #pull out the usa map
@@ -16,9 +16,11 @@ points$Type<-ordered(points$Type, levels=c("Lake", "Wetland", "Stream"))
 
 #add points to the US map
 Fig1a<-p+geom_point(data=points, size = 1, aes(x = LON_DD83, y = LAT_DD83, colour=Type, shape=Type)) + 
-  scale_colour_manual(values = c("#3399CC", "#9966CC", "chartreuse4" ), name = "Freshwater Type") + 
+  scale_colour_manual(values = c("#7570b3", "#d95f02", "#1b9e77" ), name = "Freshwater Type") + 
   scale_shape_manual(values=c(0, 2, 1),  name = "Freshwater Type") +
-  north(data = usa, symbol=3, scale=.1, location = "bottomleft") +
+  north(data = usa, symbol=3, scale=.1, location = "bottomright", 
+        anchor = c(x = -120, y = 27)) +
+  scalebar(data = usa, dist = 500, dd2km = TRUE, model = "WGS84", st.size = 2, location = "bottomleft") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         axis.line.x = element_blank(), 
@@ -42,6 +44,39 @@ library(rgdal)
 eco9<- readOGR(dsn = "Data/Ecoregion9", layer = "Export_Output")
 prj.new <-CRS("+proj=longlat +datum=NAD83 +ellps=GRS80") 
 eco9.ll <- spTransform(eco9, prj.new)
+
+#add a dataframe  
+pid = sapply(slot(eco9.ll, "polygons"), 
+             function(x) slot(x, "ID"))
+
+p.df = data.frame( ID=1:length(eco9.ll), 
+                   row.names = pid)
+
+eco9_p = SpatialPolygonsDataFrame(eco9.ll, p.df)
+
+eco_df = fortify(eco9.ll) #fortify is a ggplot function that scales coordinates to fit the plot area
+
+eco_map<-ggplot(eco_df, aes(long,lat, group=group)) + 
+  geom_polygon() +
+  scale_fill_continuous(low = "#fff7ec", high = "#7F0000")
+
+ # north(data = eco_df, symbol=3, scale=.1, location = "bottomleft") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.line.x = element_blank(), 
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.line.y = element_blank(), 
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        panel.background = element_rect(colour = "black", size=.5, fill=NA)) +
+  theme(legend.position = c(0.88, 0.20), legend.text = element_text(size=9) ) +
+  theme(legend.text=element_text(size=9) ) 
+
+mapFrance <- map(database = "france", fill = TRUE)
+gg <- ggplot(data = mapFrance)
 
 #using TMAP package
 eco<-tm_shape(eco9.ll)+

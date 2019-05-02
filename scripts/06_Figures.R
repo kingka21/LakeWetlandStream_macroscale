@@ -45,22 +45,21 @@ eco9<- readOGR(dsn = "Data/Ecoregion9", layer = "Export_Output")
 prj.new <-CRS("+proj=longlat +datum=NAD83 +ellps=GRS80") 
 eco9.ll <- spTransform(eco9, prj.new)
 
+## using ggplot 
 #add a dataframe  
 pid = sapply(slot(eco9.ll, "polygons"), 
              function(x) slot(x, "ID"))
 
-p.df = data.frame( ID=1:length(eco9.ll), 
-                   row.names = pid)
-
+p.df = data.frame(ID=1:length(eco9.ll), row.names = pid)
 eco9_p = SpatialPolygonsDataFrame(eco9.ll, p.df)
-
 eco_df = fortify(eco9.ll) #fortify is a ggplot function that scales coordinates to fit the plot area
+names(eco_df)[which(names(eco_df)=="id")]="WSA9"
+ecor_df <- plyr::join(eco_df, eco9.ll@data, by="WSA9")
 
-eco_map<-ggplot(eco_df, aes(long,lat, group=group)) + 
-  geom_polygon() +
-  scale_fill_continuous(low = "#fff7ec", high = "#7F0000")
-
- # north(data = eco_df, symbol=3, scale=.1, location = "bottomleft") +
+Fig1b<-ggplot(eco_df, aes(long,lat, group=group, fill=WSA9)) + 
+  geom_polygon(col="black") + 
+  scale_fill_manual(values=c('#f7fbff','#deebf7','#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b')) +
+  north(data = eco_df, symbol=3, scale=.1, location = "bottomleft") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         axis.line.x = element_blank(), 
@@ -75,14 +74,20 @@ eco_map<-ggplot(eco_df, aes(long,lat, group=group)) +
   theme(legend.position = c(0.88, 0.20), legend.text = element_text(size=9) ) +
   theme(legend.text=element_text(size=9) ) 
 
-mapFrance <- map(database = "france", fill = TRUE)
-gg <- ggplot(data = mapFrance)
+Fig1<-cowplot::plot_grid(fig1a, Fig1b, labels = c('A', 'B'))
+
+cowplot::save_plot("Figure 1.png", Fig1, ncol = 1, nrow = 2, base_width = 7,
+                   base_aspect_ratio = 1.1)
 
 #using TMAP package
+#set colors 
+mypalette<-c('#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b')
 eco<-tm_shape(eco9.ll)+
-  tm_fill('WSA9', title = 'Ecoregion') + 
+  tm_polygons('WSA9', title = 'Ecoregion', palette = mypalette ) + 
+  tm_borders("black") +
   tm_layout(legend.text.size = .9, legend.title.size=1, legend.position = c("right", "bottom") ) +
-  tm_compass(north = 0, type = 'arrow', position =c("left", "bottom"))
+  tm_compass(north = 0, type = 'arrow', position =c("left", "bottom")) + 
+  tm_scale_bar(position=c("center", "bottom"))
 
 save_tmap(eco, filename="Figure 1b.png", width = 7, asp=0)
 

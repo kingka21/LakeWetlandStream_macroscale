@@ -162,77 +162,77 @@ par(mar=c(3,3,0,0), oma=c(3,3,2,1))
 
 #top left panel 
 plot(variogramLine(lake.TP.fit, 2500), type='l', ylim=c(0,2.5)) 
-points(lake.TP.v[,2:3], pch=21, bg="deepskyblue", col='black')  
-abline(v=lake.TP.fit[2,3], col="deepskyblue") 
-abline(v=1950, col="deepskyblue") 
+points(lake.TP.v[,2:3], pch=21, bg="#7570b3", col='black')  
+abline(v=lake.TP.fit[2,3], col="#7570b3") 
+abline(v=1950, col="#7570b3") 
 #mtext('a', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #top middle 
 plot(variogramLine(wl.TP.fit, 2500), type='l', ylim=c(0,3.5)) #this plots the line from the model 
-points(wl.TP.v[,2:3], pch=21, bg='mediumpurple',  col='black')  #this plots the points 
-abline(v=wl.TP.fit[2,3], col="mediumpurple") #this plots the R range 
-abline(v=1930, col="mediumpurple") #this plots the R range 
+points(wl.TP.v[,2:3], pch=21, bg='#d95f02',  col='black')  #this plots the points 
+abline(v=wl.TP.fit[2,3], col="#d95f02") #this plots the R range 
+abline(v=1930, col="#d95f02") #this plots the R range 
 #mtext('b', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #top right 
 plot(variogramLine(stream.TP.fit, 2500), type='l', ylim=c(0,2.2)) #this plots the line from the model 
-points(stream.TP.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
-abline(v=stream.TP.fit[2,3], col="green3") 
-abline(v=1950, col="green3") #this plots the R range 
+points(stream.TP.v[,2:3], pch=21, bg='#1b9e77', col="black")  #this plots the points 
+abline(v=stream.TP.fit[2,3], col="#1b9e77") 
+abline(v=1950, col="#1b9e77") #this plots the R range 
 #mtext('c', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #left TN 
 plot(variogramLine(lake.TN.fit, 2500), type='l', ylim=c(0,2)) #this plots the line from the model 
-points(lake.TN.v[,2:3], pch=21, bg='deepskyblue', col="black")  
-abline(v=lake.TN.fit[2,3], col="deepskyblue") 
-abline(v=1750, col="deepskyblue") 
+points(lake.TN.v[,2:3], pch=21, bg='#7570b3', col="black")  
+abline(v=lake.TN.fit[2,3], col="#7570b3") 
+abline(v=1750, col="#7570b3") 
 #mtext('d', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 # middle 
 plot(variogramLine(wl.TN.fit, 2500), type='l', ylim=c(0,2)) 
-points(wl.TN.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
-abline(v=wl.TN.fit[2,3], col="mediumpurple") #this plots the R range 
+points(wl.TN.v[,2:3], pch=21, bg='#d95f02', col="black")  #this plots the points 
+abline(v=wl.TN.fit[2,3], col="#d95f02") #this plots the R range 
 #mtext('e', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # right 
 plot(variogramLine(stream.TN.fit, 2500), type='l', ylim=c(0,2)) 
-points(stream.TN.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
-abline(v=stream.TN.fit[2,3], col="green3") 
+points(stream.TN.v[,2:3], pch=21, bg='#1b9e77', col="black")  #this plots the points 
+abline(v=stream.TN.fit[2,3], col="#1b9e77") 
 #mtext('f', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #Chla 
 plot(variogramLine(lake.CHL.fit, 2500), type='l', ylim=c(0,2.0)) #this plots the line from the model 
-points(lake.CHL.v[,2:3], pch=21, bg='deepskyblue', col="black")  
-abline(v=lake.CHL.fit[2,3], col="deepskyblue") 
-abline(v=1800, col="deepskyblue") 
+points(lake.CHL.v[,2:3], pch=21, bg='#7570b3', col="black")  
+abline(v=lake.CHL.fit[2,3], col="#7570b3") 
+abline(v=1800, col="#7570b3") 
 #mtext('g', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # middle 
 plot(variogramLine(wl.CHL.fit, 2500), type='l', ylim=c(0,3.5)) 
-points(wl.CHL.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
-abline(v=wl.CHL.fit[2,3], col="mediumpurple") #this plots the R range 
-abline(v=1500, col="mediumpurple")
+points(wl.CHL.v[,2:3], pch=21, bg='#d95f02', col="black")  #this plots the points 
+abline(v=wl.CHL.fit[2,3], col="#d95f02") #this plots the R range 
+abline(v=1500, col="#d95f02")
 #mtext('h', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # right 
 plot(variogramLine(stream.CHL.fit, 2500), type='l', ylim=c(0,3.5)) 
-points(stream.CHL.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
-abline(v=stream.CHL.fit[2,3], col="green3") 
-abline(v=1700, col="green3") 
+points(stream.CHL.v[,2:3], pch=21, bg='#1b9e77', col="black")  #this plots the points 
+abline(v=stream.CHL.fit[2,3], col="#1b9e77") 
+abline(v=1700, col="#1b9e77") 
 #mtext('i', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #AQM 
 plot(variogramLine(lake.aq.fit, 2500), type='l', ylim=c(0,2.5)) #this plots the line from the model 
-points(lake.aq.v[,2:3], pch=21, bg='deepskyblue', col="black")  
-abline(v=lake.aq.fit[2,3], col="deepskyblue") 
+points(lake.aq.v[,2:3], pch=21, bg='#7570b3', col="black")  
+abline(v=lake.aq.fit[2,3], col="#7570b3") 
 #mtext('j', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # middle 
 plot(variogramLine(wl.aq.fit, 2500), type='l', ylim=c(0,4.2)) 
-points(wl.aq.v[,2:3], pch=21, bg='mediumpurple', col="black")  #this plots the points 
-abline(v=wl.aq.fit[2,3], col="mediumpurple") #this plots the R range 
+points(wl.aq.v[,2:3], pch=21, bg='#d95f02', col="black")  #this plots the points 
+abline(v=wl.aq.fit[2,3], col="#d95f02") #this plots the R range 
 #mtext('k', side = 3, line = -1.5, adj = .02, cex = 1.0)
 # right 
 plot(variogramLine(stream.aq.fit, 2500), type='l', ylim=c(0,2.2)) 
-points(stream.aq.v[,2:3], pch=21, bg='green3', col="black")  #this plots the points 
-abline(v=stream.aq.fit[2,3], col="green3") 
-abline(v=1630, col="green3") 
+points(stream.aq.v[,2:3], pch=21, bg='#1b9e77', col="black")  #this plots the points 
+abline(v=stream.aq.fit[2,3], col="#1b9e77") 
+abline(v=1630, col="#1b9e77") 
 #mtext('l', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #add axis labels
@@ -273,7 +273,7 @@ for.fit<-fit.variogram(for.v, vgm("Sph", "Exp")) #fit a model variogram
 for.fit #shows parameters
 #plot 
 plot(variogramLine(for.fit, 2500), type='l', ylim=c(0,2000), main = "percent forest cover") #this plots the line from the model 
-points(for.v[,2:3], pch=21, bg='orange', col="black")
+points(for.v[,2:3], pch=21, bg='blue', col="black")
 
 #Agriculture
 hist(allecos$AG_PCT)
@@ -286,7 +286,7 @@ ag.fit<-fit.variogram(ag.v, vgm("Sph", "Exp")) #fit a model variogram
 ag.fit #shows parameters
 #plot 
 plot(variogramLine(ag.fit, 2500), type='l', ylim=c(0,1500), main = "percent agriculture cover") #this plots the line from the model 
-points(ag.v[,2:3], pch=21, bg='orange', col="black")
+points(ag.v[,2:3], pch=21, bg='blue', col="black")
 
 #Depth 
 hist(allecos$DEPTH)
@@ -299,19 +299,8 @@ Dep.fit<-fit.variogram(Dep.v, vgm("Sph", "Exp")) #fit a model variogram
 Dep.fit #shows parameters
 #plot 
 plot(variogramLine(Dep.fit, 2500), type='l', ylim=c(0,3), main = "depth") #this plots the line from the model 
-points(Dep.v[,2:3], pch=21, bg='orange', col="black")
+points(Dep.v[,2:3], pch=21, bg='blue', col="black")
 
-#longitude
-hist(allecos$LON_DD83)
-
-lon<-all.aea[!(is.na(all.aea$LON_DD83)),] 
-lon.v <- variogram(LON_DD83~1, lon, cutoff=2500, width=20)  
-min(lon.v$np) #ensure there are more than 50 pairs in each bin distance 
-lon.fit<-fit.variogram(lon.v, vgm("Sph", "Exp")) #no convergence 
-
-#plot 
-plot(variogramLine(lon.fit, 2500), type='l', main = "longitude") 
-points(lon.v[,2:3], pch=21, bg='orange', col="black")
 
 #Elevation
 hist(allecos$ELEVMEAN)
@@ -323,7 +312,7 @@ elev.fit<-fit.variogram(elev.v, vgm("Sph", "Exp")) #no convergence
 
 #plot 
 plot(variogramLine(elev.fit, 2500), type='l', main = "mean elevation")
-points(elev.v[,2:3], pch=21, bg='orange', col="black")
+points(elev.v[,2:3], pch=21, bg='blue', col="black")
 
 #Summer Temp 
 hist(allecos$Tsummer)
@@ -335,45 +324,40 @@ temp.fit<-fit.variogram(temp.v, vgm("Sph", "Exp")) #no convergence
 
 #plot 
 plot(variogramLine(temp.fit, 2500), type='l', main = "summer temperature")  
-points(temp.v[,2:3], pch=21, bg='orange', col="black")
+points(temp.v[,2:3], pch=21, bg='blue', col="black")
 
 ##### ##### ##### ##### 
 ##### panel Plot ##### 
-jpeg('pred_varios.jpeg',width = 6, height = 5, units = 'in', res = 600)
-par(mfrow=c(2,3))
+jpeg('pred_varios.jpeg',width = 10, height = 3, units = 'in', res = 600)
+par(mfrow=c(1,5))
 par(mar=c(2,2,1,1), oma=c(2,2,2,1))
 #top left panel forest
-plot(variogramLine(for.fit, 2500), type='l', ylim=c(0,2000), main = "percent forest cover") #this plots the line from the model 
-points(for.v[,2:3], pch=21, bg='orange', col="black") 
-abline(v=for.fit[2,3], col="orange") 
-abline(v=1900, col="orange") 
+plot(variogramLine(for.fit, 2500), type='l', ylim=c(0,2000), main = "% forest cover") #this plots the line from the model 
+points(for.v[,2:3], pch=21, bg='blue', col="black") 
+abline(v=for.fit[2,3], col="blue") 
+abline(v=1900, col="blue") 
 #mtext('a', side = 3, line = -1.5, adj = .02, cex = .7)
 
 #top mid ag
-plot(variogramLine(ag.fit, 2500), type='l', ylim=c(0,1500), main = "percent agriculture cover") #this plots the line from the model 
-points(ag.v[,2:3], pch=21, bg='orange', col="black")
-abline(v=ag.fit[2,3], col="orange") #this plots the R range 
-abline(v=1950, col="orange") #this plots the R range 
+plot(variogramLine(ag.fit, 2500), type='l', ylim=c(0,1500), main = "% agriculture cover") #this plots the line from the model 
+points(ag.v[,2:3], pch=21, bg='blue', col="black")
+abline(v=ag.fit[2,3], col="blue") #this plots the R range 
+abline(v=1950, col="blue") #this plots the R range 
 #mtext('b', side = 3, line = -1.5, adj = .02, cex = .7)
 
 #top right depth
 plot(variogramLine(Dep.fit, 2500), type='l', ylim=c(0,3), main = "depth") #this plots the line from the model 
-points(Dep.v[,2:3], pch=21, bg='orange', col="black")
-abline(v=Dep.fit[2,3], col="orange") 
+points(Dep.v[,2:3], pch=21, bg='blue', col="black")
+abline(v=Dep.fit[2,3], col="blue") 
 #mtext('c', side = 3, line = -1.5, adj = .02, cex = .7)
-
-#bottom left lon
-plot(variogramLine(lon.fit, 2500), type='l', main = "longitude") #this plots the line from the model 
-points(lon.v[,2:3], pch=21, bg='orange', col="black")
-#mtext('d', side = 3, line = -1.5, adj = .02, cex = .7)
 
 #bottom mid elev
 plot(variogramLine(elev.fit, 2500), type='l', main = "mean elevation") #this plots the line from the model 
-points(elev.v[,2:3], pch=21, bg='orange', col="black")
+points(elev.v[,2:3], pch=21, bg='blue', col="black")
 
 #bottom right temp 
 plot(variogramLine(temp.fit, 2500), type='l', main = "summer temperature") #this plots the line from the model 
-points(temp.v[,2:3], pch=21, bg='orange', col="black")
+points(temp.v[,2:3], pch=21, bg='blue', col="black")
 
 #add axis labels
 mtext("distance (km)", side = 1, outer = TRUE, cex = .9, line = 1)

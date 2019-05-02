@@ -30,7 +30,7 @@ RF_TP
 TP_imp <-randomForest::importance(RF_TP, type=1, scale=FALSE) #mean decrease in accuracy (also called permutation accuracy importance).
 
 # diagnostic for if I ran enough trees to reduce MSE  
-plot(RF_TP, xlim=c(0,600))
+plot(RF_TP, xlim=c(0,500))
 
 #### TN ##### 
 set.seed(8) #TRY DIFFERENT SEED SETS 188, 18, 999, 8 
@@ -53,6 +53,7 @@ RF_CHLA <- randomForest(log(CHLA+1) ~ Rveg + ELEVMEAN + Type + DEPTH + POPDEN + 
                         WETLAND_PCT + URBAN_PCT + SHRUB_GRASS_PCT + AGGR_ECO9_2015, 
                       data=noNAs, ntree=ntreez, importance=T, na.action=na.omit)
 RF_CHLA
+CHLA_imp <-randomForest::importance(RF_CHLA, type=1, scale=FALSE) #mean decrease in accuracy (also called permutation accuracy importance).
 
 # diagnostic for if I ran enough trees to reduce MSE  
 plot(RF_CHLA, xlim=c(0,600))
@@ -133,7 +134,7 @@ io$`Pred` <- factor(io$`Pred`, levels=io$`Pred`)  # convert to factor to retain 
 veg<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) + 
   geom_point(stat="identity", size=2) + 
   coord_flip( ylim = c(0, 0.85)) + 
-  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain', 'plain',
+  theme(axis.text.y=element_text(face = c('plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain',
                                           'plain', 'plain', 'plain', 'plain', 'plain', 'plain', 
                                           'plain', 'plain', 'bold', 'bold'))) +

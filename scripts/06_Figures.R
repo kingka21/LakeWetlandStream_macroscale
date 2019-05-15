@@ -20,7 +20,7 @@ Fig1a<-p+geom_point(data=points, size = 1, aes(x = LON_DD83, y = LAT_DD83, colou
   scale_shape_manual(values=c(0, 2, 1),  name = "Freshwater Type") +
   north(data = usa, symbol=3, scale=.1, location = "bottomright", 
         anchor = c(x = -120, y = 27)) +
-  scalebar(data = usa, dist = 500, dd2km = TRUE, model = "WGS84", st.size = 2, location = "bottomleft") +
+  ggsn::scalebar(data = usa, dist = 500,dist_unit ="km", transform = TRUE, model = "WGS84", st.size = 2, location = "bottomleft") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         axis.line.x = element_blank(), 
@@ -39,7 +39,6 @@ cowplot::save_plot("Figure 1a.png", Fig1a, base_width = 7,
                    base_aspect_ratio = 1.1)
                   
 #Fig 1 B
-library(tmap)
 library(rgdal)
 eco9<- readOGR(dsn = "Data/Ecoregion9", layer = "Export_Output")
 prj.new <-CRS("+proj=longlat +datum=NAD83 +ellps=GRS80") 
@@ -56,10 +55,11 @@ eco_df = fortify(eco9.ll) #fortify is a ggplot function that scales coordinates 
 names(eco_df)[which(names(eco_df)=="id")]="WSA9"
 ecor_df <- plyr::join(eco_df, eco9.ll@data, by="WSA9")
 
-Fig1b<-ggplot(eco_df, aes(long,lat, group=group, fill=WSA9)) + 
+  Fig1b<-ggplot(eco_df, aes(long,lat, group=group, fill=WSA9)) + 
   geom_polygon(col="black") + 
-  scale_fill_manual(values=c('#f7fbff','#deebf7','#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b')) +
-  north(data = eco_df, symbol=3, scale=.1, location = "bottomleft") +
+  scale_fill_manual(name="Region", values=c('#f7fbff','#deebf7','#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b' ), labels = c("CPL", "NAP", "NPL", "SAP", "SPL" , "TPL", "UMW", "WMT" , "XER") ) +
+    north(data = eco_df, symbol=3, scale=.1, location = "bottomright", anchor = c(x = -120, y = 27)) +
+    ggsn::scalebar(data = eco_df, dist = 500,dist_unit ="km", transform = TRUE, model = "WGS84", st.size = 2, location = "bottomleft") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         axis.line.x = element_blank(), 
@@ -70,17 +70,14 @@ Fig1b<-ggplot(eco_df, aes(long,lat, group=group, fill=WSA9)) +
         axis.title.y = element_blank(),
         axis.ticks.y = element_blank(),
         axis.text.y = element_blank(),
-        panel.background = element_rect(colour = "black", size=.5, fill=NA)) +
-  theme(legend.position = c(0.88, 0.20), legend.text = element_text(size=9) ) +
-  theme(legend.text=element_text(size=9) ) 
+        panel.background = element_rect(colour = "black", size=.5, fill=NA)) + theme( legend.position = c(0.94, 0.34)) + theme(legend.text=element_text(size=8) ) 
 
-Fig1<-cowplot::plot_grid(fig1a, Fig1b, labels = c('A', 'B'))
 
-cowplot::save_plot("Figure 1.png", Fig1, ncol = 1, nrow = 2, base_width = 7,
-                   base_aspect_ratio = 1.1)
+cowplot::save_plot("Figure 1b.png", Fig1b, base_width = 7, base_aspect_ratio = 1.1)
 
 #using TMAP package
 #set colors 
+library(tmap)
 mypalette<-c('#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b')
 eco<-tm_shape(eco9.ll)+
   tm_polygons('WSA9', title = 'Ecoregion', palette = mypalette ) + 

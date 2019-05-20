@@ -75,19 +75,6 @@ ecor_df <- plyr::join(eco_df, eco9.ll@data, by="WSA9")
 
 cowplot::save_plot("Figure 1b.png", Fig1b, base_width = 7, base_aspect_ratio = 1.1)
 
-#using TMAP package
-#set colors 
-library(tmap)
-mypalette<-c('#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b')
-eco<-tm_shape(eco9.ll)+
-  tm_polygons('WSA9', title = 'Ecoregion', palette = mypalette ) + 
-  tm_borders("black") +
-  tm_layout(legend.text.size = .9, legend.title.size=1, legend.position = c("right", "bottom") ) +
-  tm_compass(north = 0, type = 'arrow', position =c("left", "bottom")) + 
-  tm_scale_bar(position=c("center", "bottom"))
-
-save_tmap(eco, filename="Figure 1b.png", width = 7, asp=0)
-
 #Figure 5 - 4-panel map
 noNAs<-allecos[!(is.na(allecos$TP)),]
 mid<-mean(log(noNAs$TP+1))  
@@ -135,5 +122,5 @@ vegmap<-p+ geom_point(data=noNAs, aes(x = LON_DD83, y = LAT_DD83, colour=log(aqv
 
 Fig3<-cowplot::plot_grid(TPmap, TNmap, CHLmap, vegmap, labels = c('A', 'B', "C", "D"))
 
-cowplot::save_plot("Figure 5.png", Fig3, ncol = 2, nrow = 2, base_width = 7,
+cowplot::save_plot("Figure 2.png", Fig3, ncol = 2, nrow = 2, base_width = 7,
                    base_aspect_ratio = 1.1)

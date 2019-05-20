@@ -65,7 +65,7 @@ dotchart(imp[order(imp)], xlab = "mean decrease in accuracy",
 } 
 
 # diagnostic for if I ran enough trees to reduce MSE  
-plot(RF_TN, xlim=c(0,600))
+plot(RF_TN, xlim=c(0,500))
 
 #### ChlA ##### 
 noNAs<-allecos[!(is.na(allecos$CHLA)),] 
@@ -86,7 +86,7 @@ dotchart(imp[order(imp)], xlab = "mean decrease in accuracy",
 
 } 
 # diagnostic for if I ran enough trees to reduce MSE  
-plot(RF_CHLA, xlim=c(0,600))
+plot(RF_CHLA, xlim=c(0,500))
 
 #### Aquatic Veg ##### 
 noNAs<-allecos[!(is.na(allecos$aqveg)),] 
@@ -107,7 +107,7 @@ dotchart(imp[order(imp)], xlab = "mean decrease in accuracy",
 
 } 
 # diagnostic for if I ran enough trees to reduce MSE  
-plot(RF_aqveg, xlim=c(0,600))
+plot(RF_aqveg, xlim=c(0,500))
 
 ### 4-PANEL PLOT ####
 
@@ -180,16 +180,34 @@ veg<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) +
   theme(axis.title.y=element_blank())
 
 
-Fig2<-cowplot::plot_grid(TP, TN, CHL, veg, labels = c('A', 'B', "C", "D"))
+Fig3<-cowplot::plot_grid(TP, TN, CHL, veg, labels = c('A', 'B', "C", "D"))
 
 #save plot
-cowplot::save_plot("Fig2.png", Fig2, ncol = 2, nrow = 2, base_width = 7,
+cowplot::save_plot("Fig3.png", Fig2, ncol = 2, nrow = 2, base_width = 7,
                    base_aspect_ratio = 1.1)
 
+############################################
+## Appendix S2 ###
+############################################
+#plot the number of trees as a function of error 
+jpeg('App2.jpeg',width = 7, height = 4, units = 'in', res = 600)
+par(mfrow=c(2,2))
+par(mar=c(2,2,1,1), oma=c(2,2,0,0))
 
-############################################
+plot(RF_TP, xlim=c(0,500), main ='')
+mtext('A', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+plot(RF_TN, xlim=c(0,500), main ='')
+mtext('B', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+plot(RF_CHLA, xlim=c(0,500), main ='')
+mtext('C', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+plot(RF_aqveg, xlim=c(0,500), main ='')
+mtext('D', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+mtext("number of trees", side = 1, outer = TRUE, cex = 1, line = 1)
+mtext("error", side = 2, outer = TRUE, adj=0.53, cex = 1, line = 1)
+
+dev.off()
+
 #### subsampling RF for equal sample size #### 
-############################################
 
 set.seed(999) #try multiple random bootstrap samples, set.seed( 999, 19, 18, and 188 )
 lake_samp<-sample(nrow(lake), size=400, replace = TRUE, prob = NULL)

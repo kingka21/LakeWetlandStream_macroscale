@@ -2,7 +2,7 @@
 
 This repository has the data and code for the analysis of lake, wetland, and stream biotic and abiotic properties at the national scale. The code supports the manuscript K. King, K.S. Cheruvelil, A. Pollard. 2019. Drivers and spatial structure of abiotic and biotic properties of lakes, wetlands, and streams at the national scale. Ecological Applications. 
 
-The 'scripts' folder includes the following: 
+**The 'scripts' folder includes the following:** 
 	01_lake_data_wrangling that includes methods for combining EPA National Lakes Assessment data 
 	02_stream_data_wrangling that includes methods for combining EPA Natrional Rivers and Streams Assessment data
 	03_wetland_data_wrangling that includes methods for combining EPA National Wetland Condition Assessment data

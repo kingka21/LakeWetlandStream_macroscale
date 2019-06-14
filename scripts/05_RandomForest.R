@@ -180,28 +180,28 @@ veg<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) +
   theme(axis.title.y=element_blank())
 
 
-Fig3<-cowplot::plot_grid(TP, TN, CHL, veg, labels = c('A', 'B', "C", "D"))
+Fig3<-cowplot::plot_grid(TP, TN, CHL, veg, labels = c('a', 'b', "c", "d"))
 
 #save plot
-cowplot::save_plot("Fig3.png", Fig2, ncol = 2, nrow = 2, base_width = 7,
-                   base_aspect_ratio = 1.1)
+cowplot::save_plot("Figures/Fig3.pdf", Fig3, ncol = 2, nrow = 2, base_width = 7,
+                   base_aspect_ratio = 1.1, dpi=600)
 
 ############################################
 ## Appendix S2 ###
 ############################################
 #plot the number of trees as a function of error 
-jpeg('App2.jpeg',width = 7, height = 4, units = 'in', res = 600)
+png('Sup2a.png',width = 7, height = 4, units = 'in', res = 600)
 par(mfrow=c(2,2))
 par(mar=c(2,2,1,1), oma=c(2,2,0,0))
 
 plot(RF_TP, xlim=c(0,500), main ='')
-mtext('A', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+mtext('a', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
 plot(RF_TN, xlim=c(0,500), main ='')
-mtext('B', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+mtext('b', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
 plot(RF_CHLA, xlim=c(0,500), main ='')
-mtext('C', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+mtext('c', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
 plot(RF_aqveg, xlim=c(0,500), main ='')
-mtext('D', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
+mtext('d', side = 3, line = 0, adj = -0.1, cex = 1, font=2)
 mtext("number of trees", side = 1, outer = TRUE, cex = 1, line = 1)
 mtext("error", side = 2, outer = TRUE, adj=0.53, cex = 1, line = 1)
 
@@ -369,9 +369,9 @@ veg<- ggplot(io, aes(x=`Pred`, y=`%IncMSE`)) +
 
 
 
-Sup2<-cowplot::plot_grid(TP, TN, CHL, veg, labels = c('A', 'B', "C", "D"))
+Sup2<-cowplot::plot_grid(TP, TN, CHL, veg, labels = c('a', 'b', "c", "d"))
 
 #save plot
-cowplot::save_plot("Sup2.png", Sup2, ncol = 2, nrow = 2, base_width = 7,
-                   base_aspect_ratio = 1.1)
+cowplot::save_plot("Figures/Sup2b.png", Sup2, ncol = 2, nrow = 2, base_width = 7,
+                   base_aspect_ratio = 1.1, dpi=600)
 

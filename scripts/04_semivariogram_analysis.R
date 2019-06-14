@@ -156,7 +156,7 @@ stream.aq.fit
 
 #####################   PLOT    ##################
 
-jpeg('12panel.jpeg',width = 6, height = 7, units = 'in', res = 600)
+pdf('fig4.pdf',width = 6, height = 7)
 par(mfrow=c(4,3))
 par(mar=c(3,3,0,0), oma=c(3,3,2,1))
 
@@ -236,16 +236,16 @@ abline(v=1630, col="#1b9e77")
 #mtext('l', side = 3, line = -1.5, adj = .02, cex = 1.0)
 
 #add axis labels
-mtext("distance (km)", side = 1, outer = TRUE, cex = 1, line = 1)
-mtext("semivariance", side = 2, outer = TRUE, adj=0.53, cex = 1, line = 1)
+mtext("distance (km)", side = 1, outer = TRUE, cex = .9, line = 1)
+mtext("semivariance", side = 2, outer = TRUE, adj=0.53, cex = .9, line = 1)
 
-mtext( 'lake', side=3, line=0.25, adj=0.18, cex = .9, outer=TRUE ) # 3=top, line=where in the margin, adj=left to right adjustment
-mtext( 'wetland', side=3, line=0.25, adj=0.52,cex = .9, outer=TRUE ) 
-mtext( 'stream', side=3, line=0.25, adj=0.87, cex = .9, outer=TRUE ) 
-mtext( 'TP', side=2, line=-0.5, adj=0.915, cex = .9, outer=TRUE ) # side 2=left #line is which MAR line starting at 0 and counting out
-mtext( 'TN', side=2, line=-0.5, adj=0.653, cex = .9, outer=TRUE )
-mtext( 'CHL', side=2, line=-0.5, adj=0.400, cex = .9, outer=TRUE )
-mtext( 'AqVeg', side=2,  line=-0.5, adj=0.128, cex = .9, outer=TRUE )
+mtext( 'lake', side=3, line=0.25, adj=0.18, cex = .8, outer=TRUE ) # 3=top, line=where in the margin, adj=left to right adjustment
+mtext( 'wetland', side=3, line=0.25, adj=0.52,cex = .8, outer=TRUE ) 
+mtext( 'stream', side=3, line=0.25, adj=0.87, cex = .8, outer=TRUE ) 
+mtext( 'TP', side=2, line=-0.5, adj=0.915, cex = .8, outer=TRUE ) # side 2=left #line is which MAR line starting at 0 and counting out
+mtext( 'TN', side=2, line=-0.5, adj=0.653, cex = .8, outer=TRUE )
+mtext( 'CHL', side=2, line=-0.5, adj=0.400, cex = .8, outer=TRUE )
+mtext( 'AqVeg', side=2,  line=-0.5, adj=0.128, cex = .8, outer=TRUE )
 
 dev.off()
 
@@ -328,39 +328,46 @@ points(temp.v[,2:3], pch=21, bg='blue', col="black")
 
 ##### ##### ##### ##### 
 ##### panel Plot ##### 
-jpeg('pred_varios.jpeg',width = 10, height = 3, units = 'in', res = 600)
+pdf('fig5.pdf',width = 8.75, height = 3)
 par(mfrow=c(1,5))
 par(mar=c(2,2,1,1), oma=c(2,2,2,1))
 #top left panel forest
-plot(variogramLine(for.fit, 2500), type='l', ylim=c(0,2000), main = "% forest cover") #this plots the line from the model 
+plot(variogramLine(for.fit, 2500), type='l', ylim=c(0,2000)) 
 points(for.v[,2:3], pch=21, bg='blue', col="black") 
 abline(v=for.fit[2,3], col="blue") 
 abline(v=1900, col="blue") 
 #mtext('a', side = 3, line = -1.5, adj = .02, cex = .7)
 
 #top mid ag
-plot(variogramLine(ag.fit, 2500), type='l', ylim=c(0,1500), main = "% agriculture cover") #this plots the line from the model 
+plot(variogramLine(ag.fit, 2500), type='l', ylim=c(0,1500)) 
 points(ag.v[,2:3], pch=21, bg='blue', col="black")
 abline(v=ag.fit[2,3], col="blue") #this plots the R range 
 abline(v=1950, col="blue") #this plots the R range 
 #mtext('b', side = 3, line = -1.5, adj = .02, cex = .7)
 
 #top right depth
-plot(variogramLine(Dep.fit, 2500), type='l', ylim=c(0,3), main = "depth") #this plots the line from the model 
+plot(variogramLine(Dep.fit, 2500), type='l', ylim=c(0,3)) 
 points(Dep.v[,2:3], pch=21, bg='blue', col="black")
 abline(v=Dep.fit[2,3], col="blue") 
 #mtext('c', side = 3, line = -1.5, adj = .02, cex = .7)
 
 #bottom mid elev
-plot(variogramLine(elev.fit, 2500), type='l', main = "mean elevation") #this plots the line from the model 
+plot(variogramLine(elev.fit, 2500), type='l')  
 points(elev.v[,2:3], pch=21, bg='blue', col="black")
 
 #bottom right temp 
-plot(variogramLine(temp.fit, 2500), type='l', main = "summer temperature") #this plots the line from the model 
+plot(variogramLine(temp.fit, 2500), type='l')  
 points(temp.v[,2:3], pch=21, bg='blue', col="black")
 
 #add axis labels
 mtext("distance (km)", side = 1, outer = TRUE, cex = .9, line = 1)
 mtext("semivariance", side = 2, outer = TRUE, cex = .9, line = 1)
+
+#add titles 
+mtext( '% forest cover', side=3, line=.05, adj=0.05, cex = .8, outer=TRUE ) # 3=top, line=where in the margin, adj=left to right adjustment
+mtext( '% agriculture cover', side=3, line=.05, adj=0.27,cex = .8, outer=TRUE ) 
+mtext( 'depth', side=3, line=.05, adj=0.5, cex = .8, outer=TRUE )
+mtext( 'mean elevation', side=3, line=.05, adj=0.73, cex = .8, outer=TRUE )
+mtext( 'summer temperature', side=3, line=.05, adj=0.98, cex = .8, outer=TRUE )
 
 dev.off()

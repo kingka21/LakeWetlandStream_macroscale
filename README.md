@@ -1,4 +1,5 @@
 # Drivers and spatial structure of abiotic and biotic properties of lakes, wetlands, and streams at the national scale 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3246537.svg)](https://doi.org/10.5281/zenodo.3246537)
 
 This repository has the data and code for the analysis of lake, wetland, and stream biotic and abiotic properties at the national scale. The code supports the manuscript K. King, K.S. Cheruvelil, A. Pollard. 2019. Drivers and spatial structure of abiotic and biotic properties of lakes, wetlands, and streams at the national scale. Ecological Applications. 
 
